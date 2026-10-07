@@ -1,0 +1,21 @@
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# Local embedded database (PGlite) — contains candidate responses
+.data/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Source assessment document contains confidential assessor material (Part 3).
+# Keep it out of version control.
+*.docx
+~$*
+
+.DS_Store
+.vercel
