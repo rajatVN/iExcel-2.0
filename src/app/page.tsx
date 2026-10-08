@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { LockKeyhole } from "lucide-react";
 import { getCandidate } from "@/lib/auth";
-import { Brand, BrandMark, ORGANISATION_LOGO } from "@/components/Brand";
+import { BrandMark, ORGANISATION_LOGO, OrgLogo } from "@/components/Brand";
 import { LoginForm } from "@/components/LoginForm";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default async function LoginPage() {
   if (await getCandidate()) redirect("/dashboard");
   return (
-    <div className="grid min-h-screen lg:grid-cols-[1.05fr_1fr]">
+    <div className="grid min-h-screen grid-rows-[auto_1fr] lg:grid-cols-[1.05fr_1fr] lg:grid-rows-none">
       <section className="relative hidden overflow-hidden bg-navy-950 p-12 text-white lg:flex lg:flex-col">
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.05]"
@@ -56,11 +56,29 @@ export default async function LoginPage() {
         </div>
       </section>
 
-      <section className="flex items-center justify-center px-4 py-12 sm:px-6">
-        <div className="w-full max-w-sm">
-          <div className="mb-12 lg:hidden">
-            <Brand subtitle="Behavioural assessment" />
+      {/* Mobile / tablet header: same navy identity as the desktop panel */}
+      <section className="relative overflow-hidden bg-navy-950 px-6 pb-10 pt-8 text-white sm:px-10 lg:hidden">
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(70% 80% at 100% 0%, rgba(59,116,232,0.3), transparent 70%), radial-gradient(60% 80% at 0% 100%, rgba(33,58,104,0.9), transparent 70%)",
+          }}
+        />
+        <div className="relative mx-auto max-w-sm">
+          {ORGANISATION_LOGO && <OrgLogo className="h-12" />}
+          <div className="mt-8 flex items-center gap-3">
+            <BrandMark className="h-9 w-9" />
+            <div className="leading-tight">
+              <div className="text-2xl font-semibold tracking-tight">iExcel 2.0</div>
+              <div className="mt-0.5 text-sm text-blue-100/75">Behavioural assessment</div>
+            </div>
           </div>
+        </div>
+      </section>
+
+      <section className="flex items-start justify-center px-6 py-10 sm:px-10 lg:items-center lg:px-6 lg:py-12">
+        <div className="w-full max-w-sm">
           <h2 className="text-3xl font-semibold tracking-tight">Sign in</h2>
           <p className="mb-9 mt-2 text-sm leading-relaxed text-ink-soft">
             Enter the candidate ID and access code you were given.

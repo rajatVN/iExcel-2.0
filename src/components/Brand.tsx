@@ -3,10 +3,31 @@
  * panel and the candidate header. Replace the file in /public/brand or set to
  * null to hide it (the login page then shows a neutral placeholder).
  */
-export const ORGANISATION_LOGO: { src: string; alt: string } | null = {
+export const ORGANISATION_LOGO: { src: string; alt: string; width: number; height: number } | null = {
   src: "/brand/organisation-logo.png",
   alt: "Bajaj",
+  width: 226,
+  height: 278,
 };
+
+/** Organisation logo in white (navy backgrounds) or navy (light backgrounds). */
+export function OrgLogo({ className = "h-10", tone = "white" }: { className?: string; tone?: "white" | "navy" }) {
+  if (!ORGANISATION_LOGO) return null;
+  const { src, alt, width, height } = ORGANISATION_LOGO;
+  if (tone === "white") {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={src} alt={alt} width={width} height={height} className={`${className} w-auto`} />;
+  }
+  const mask = `url(${src}) center / contain no-repeat`;
+  return (
+    <span
+      role="img"
+      aria-label={alt}
+      className={`${className} inline-block shrink-0 bg-navy-900`}
+      style={{ aspectRatio: `${width} / ${height}`, mask, WebkitMask: mask }}
+    />
+  );
+}
 
 /** Product mark + wordmark. */
 export function BrandMark({ className = "h-8 w-8" }: { className?: string }) {
@@ -20,10 +41,23 @@ export function BrandMark({ className = "h-8 w-8" }: { className?: string }) {
   );
 }
 
-export function Brand({ dark = false, subtitle = "Project Drishti In-Basket" }: { dark?: boolean; subtitle?: string }) {
+export function Brand({
+  dark = false,
+  subtitle = "Project Drishti In-Basket",
+  mark = "product",
+}: {
+  dark?: boolean;
+  subtitle?: string;
+  /** "organisation" shows the organisation logo in place of the product mark. */
+  mark?: "product" | "organisation";
+}) {
   return (
     <div className="flex items-center gap-3">
-      <BrandMark />
+      {mark === "organisation" && ORGANISATION_LOGO ? (
+        <OrgLogo className="h-10" tone={dark ? "white" : "navy"} />
+      ) : (
+        <BrandMark />
+      )}
       <div className="leading-tight">
         <div className={`text-[15px] font-semibold tracking-tight ${dark ? "text-white" : "text-ink"}`}>iExcel 2.0</div>
         <div className={`text-xs ${dark ? "text-blue-200/80" : "text-ink-faint"}`}>{subtitle}</div>
