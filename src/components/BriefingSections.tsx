@@ -32,7 +32,6 @@ export function OrganisationContext() {
         <img src={c.image} alt="" className="h-auto w-full" />
         {/* The infographic's text, for screen readers. */}
         <figcaption className="sr-only">
-          <p>{c.imageText}</p>
           <p>{c.pressuresLead}</p>
           <ul>
             {c.pressures.map((p) => (
