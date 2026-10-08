@@ -3,7 +3,9 @@
  * CANDIDATE-FACING CONTENT ONLY.
  *
  * Transcribed from "iExcel 2.0 In-Basket - Project Drishti Pilot.docx",
- * Candidate Pack sections A–H. Wording is kept exactly as in the source.
+ * Candidate Pack sections A–H. Adapted for the online version: times use the
+ * 12-hour clock, email headers give each person's role in brackets, and
+ * emails open with a greeting and close with "Regards".
  *
  * Part 3 of the source (Sections I and J — competency mapping and marking
  * guide) is assessor-only and is intentionally NOT included anywhere in this
@@ -51,17 +53,12 @@ export const ROLE_TITLE = "Manager – Manufacturing Excellence";
 export const ITEM_COUNT = 9;
 
 /* ------------------------------------------------------------------------ */
-/* A. Note to the participant                                                */
-/* ------------------------------------------------------------------------ */
-
-export const participantNote =
-  "To the participant. You will play the role of Ananya Kulkarni at a fictional company. Read the briefing sections first, then work through the nine items in your inbox. You have 30 minutes in total. Everything you need is in this pack.";
-
-/* ------------------------------------------------------------------------ */
 /* B. Organisation Context                                                   */
 /* ------------------------------------------------------------------------ */
 
 export const organisationContext = {
+  /** Infographic of the company, its plants and the three pressures (intro, pressuresLead and pressures below). */
+  image: "/organisation-context.webp",
   intro:
     "Aaravi Automotive Ltd. is an Indian vehicle manufacturer with more than thirty-five years in the market. It has two plants: Dharwad (Karnataka), the smaller and newer plant, and Neemrana (Rajasthan), the larger and older plant. A long-term settlement with the workers’ union covers manning, shift patterns and the introduction of new machinery at both plants. Most inspection staff are long-serving.",
   pressuresLead: "The company faces three pressures at the same time:",
@@ -103,7 +100,7 @@ export const organisationContext = {
 
 export const organisationStructure = {
   intro: "Only the people who appear in the items are shown.",
-  chartImage: "/organisation-structure.png",
+  chartImage: "/organisation-structure.webp",
   people: [
     {
       name: "Arvind Choudhary",
@@ -209,8 +206,8 @@ export const yourRole = {
 /* ------------------------------------------------------------------------ */
 
 export const immediateSituation = [
-  "It is 07:30 on Monday 19 October 2026. You came back late last night from a one-week residential leadership programme. Before you left, you agreed with Suresh that you would not be contacted except in an emergency. Suresh handled routine matters but did not commit you on anything important. Everything that needed you has been held.",
-  "The nine items are in your inbox and on your desk. None of them has been answered. Your first meeting is at 09:30. You cannot reach anyone before then, so you need to decide now what you will do, in what order, and what you will say.",
+  "It is 7:30 AM on Monday 19 October 2026. You came back late last night from a one-week residential leadership programme. Before you left, you agreed with Suresh that you would not be contacted except in an emergency. Suresh handled routine matters but did not commit you on anything important. Everything that needed you has been held.",
+  "The nine items are in your inbox and on your desk. None of them has been answered. Your first meeting is at 9:30 AM. You cannot reach anyone before then, so you need to decide now what you will do, in what order, and what you will say.",
 ];
 
 /* ------------------------------------------------------------------------ */
@@ -222,23 +219,23 @@ export const calendar = {
     {
       day: "Monday 19 Oct",
       entries: [
-        { time: "09:30", text: "Drishti weekly team review, Dharwad (your team, including Pooja and Arjun)" },
-        { time: "14:00", text: "Second shift starts at Dharwad" },
-        { time: "16:00", text: "Call with VisionEdge (Karthik Rao)" },
+        { time: "9:30 AM", text: "Drishti weekly team review, Dharwad (your team, including Pooja and Arjun)" },
+        { time: "2:00 PM", text: "Second shift starts at Dharwad" },
+        { time: "4:00 PM", text: "Call with VisionEdge (Karthik Rao)" },
       ],
     },
     {
       day: "Tuesday 20 Oct",
       entries: [
-        { time: "11:00", text: "One-to-one with Suresh" },
-        { time: "18:00", text: "Deadline: your one-page recommendation to Suresh" },
+        { time: "11:00 AM", text: "One-to-one with Suresh" },
+        { time: "6:00 PM", text: "Deadline: your one-page recommendation to Suresh" },
       ],
     },
     {
       day: "Wednesday 21 Oct",
       entries: [
         {
-          time: "10:00",
+          time: "10:00 AM",
           text: "Drishti Steering Committee (COO chairs; plant heads, Quality, Finance and HR attend)",
         },
       ],
@@ -246,8 +243,8 @@ export const calendar = {
     {
       day: "Thursday 22 Oct",
       entries: [
-        { time: "09:00", text: "Budget lock with Finance (Drishti savings line)" },
-        { time: "11:00", text: "Neemrana supervisors’ briefing by Vikrant Desai and Farhan Qureshi" },
+        { time: "9:00 AM", text: "Budget lock with Finance (Drishti savings line)" },
+        { time: "11:00 AM", text: "Neemrana supervisors’ briefing by Vikrant Desai and Farhan Qureshi" },
       ],
     },
     {
@@ -320,20 +317,20 @@ export const items: InBasketItem[] = [
     formatLabel: "Email",
     shortTitle: "Finance — firm savings figure",
     sender: "Manish Agarwal",
-    sentShort: "Fri 17:40",
+    sentShort: "Fri 5:40 PM",
     subject: "Drishti savings – firm number needed for Thursday",
-    preview: "We lock next year’s manufacturing budget on Thursday at 09:00. The Drishti business case shows a saving of ₹18 crore…",
+    preview: "We lock next year’s manufacturing budget on Thursday at 9:00 AM. The Drishti business case shows a saving of ₹18 crore…",
     headers: [
-      { label: "From", value: "Manish Agarwal, Finance Business Partner – Manufacturing" },
-      { label: "To", value: "Ananya Kulkarni" },
-      { label: "Cc", value: "Suresh Iyengar" },
-      { label: "Sent", value: "Friday 16 October, 17:40" },
+      { label: "From", value: "Manish Agarwal (Finance Business Partner – Manufacturing)" },
+      { label: "To", value: "Ananya Kulkarni (Manager – Manufacturing Excellence)" },
+      { label: "Cc", value: "Suresh Iyengar (Head – Manufacturing Excellence)" },
+      { label: "Sent", value: "Friday 16 October, 5:40 PM" },
     ],
     blocks: [
-      { kind: "p", text: "Ananya," },
+      { kind: "p", text: "Hi Ananya," },
       {
         kind: "p",
-        text: "We lock next year’s manufacturing budget on Thursday at 09:00. The Drishti business case shows a saving of ₹18 crore a year at full roll-out across both plants, mainly from 40 fewer manual inspection roles and lower rework.",
+        text: "We lock next year’s manufacturing budget on Thursday at 9:00 AM. The Drishti business case shows a saving of ₹18 crore a year at full roll-out across both plants, mainly from 40 fewer manual inspection roles and lower rework.",
       },
       {
         kind: "p",
@@ -343,7 +340,7 @@ export const items: InBasketItem[] = [
         kind: "p",
         text: "Two things I have not reconciled. The case has no line for retraining, redeployment or running manual and automated inspection side by side. And Deepak’s launch team has asked for 12 additional people next year. Tell me if either changes your number.",
       },
-      { kind: "p", text: "Manish" },
+      { kind: "p", text: "Regards,\nManish" },
     ],
     responseType: "standard",
   },
@@ -353,17 +350,17 @@ export const items: InBasketItem[] = [
     formatLabel: "Email",
     shortTitle: "Plant Head Dharwad — take Drishti to Neemrana in November",
     sender: "Vikrant Desai",
-    sentShort: "Sat 11:20",
+    sentShort: "Sat 11:20 AM",
     subject: "Dharwad pilot works – let’s take Drishti to Neemrana in November",
     preview: "Output per operator on the pilot lines is up 22% since Drishti went live in June. That settles it for me…",
     headers: [
-      { label: "From", value: "Vikrant Desai, Plant Head – Dharwad" },
-      { label: "To", value: "Ananya Kulkarni" },
-      { label: "Cc", value: "Farhan Qureshi" },
-      { label: "Sent", value: "Saturday 17 October, 11:20" },
+      { label: "From", value: "Vikrant Desai (Plant Head – Dharwad)" },
+      { label: "To", value: "Ananya Kulkarni (Manager – Manufacturing Excellence)" },
+      { label: "Cc", value: "Farhan Qureshi (Plant Head – Neemrana)" },
+      { label: "Sent", value: "Saturday 17 October, 11:20 AM" },
     ],
     blocks: [
-      { kind: "p", text: "Ananya," },
+      { kind: "p", text: "Hi Ananya," },
       {
         kind: "p",
         text: "Output per operator on the pilot lines is up 22% since Drishti went live in June. That settles it for me. Let’s start Neemrana on 2 November and book the savings in this budget.",
@@ -374,9 +371,9 @@ export const items: InBasketItem[] = [
       },
       {
         kind: "p",
-        text: "Farhan and I brief the Neemrana supervisors on Thursday at 11:00. I want Manufacturing Excellence and the plants saying the same thing there, and at Wednesday’s Steering Committee. Can I count on your support?",
+        text: "Farhan and I brief the Neemrana supervisors on Thursday at 11:00 AM. I want Manufacturing Excellence and the plants saying the same thing there, and at Wednesday’s Steering Committee. Can I count on your support?",
       },
-      { kind: "p", text: "Vikrant" },
+      { kind: "p", text: "Regards,\nVikrant" },
     ],
     responseType: "standard",
   },
@@ -386,13 +383,13 @@ export const items: InBasketItem[] = [
     formatLabel: "Dashboard extract with note",
     shortTitle: "Quality — inspection results and two false-reject figures",
     sender: "Lakshmi Narayanan",
-    sentShort: "Fri 19:05",
+    sentShort: "Fri 7:05 PM",
     subject: "Drishti inspection results – decision needed before Neemrana",
     preview: "Drishti dashboard – Dharwad pilot lines, September. False rejects: 4.8% of parts inspected (go-live target: 2.0%)…",
     headers: [
-      { label: "From", value: "Lakshmi Narayanan, Head – Quality" },
-      { label: "To", value: "Ananya Kulkarni" },
-      { label: "Sent", value: "Friday 16 October, 19:05" },
+      { label: "From", value: "Lakshmi Narayanan (Head – Quality)" },
+      { label: "To", value: "Ananya Kulkarni (Manager – Manufacturing Excellence)" },
+      { label: "Sent", value: "Friday 16 October, 7:05 PM" },
     ],
     blocks: [
       {
@@ -409,13 +406,13 @@ export const items: InBasketItem[] = [
       },
       {
         kind: "p",
-        text: "Ananya, the line-monitoring system shows false rejects at 2.1% for the same month. The two systems count re-checked parts differently, and nobody has yet confirmed which figure is right.",
+        text: "The line-monitoring system shows false rejects at 2.1% for the same month. The two systems count re-checked parts differently, and nobody has yet confirmed which figure is right.",
       },
       {
         kind: "p",
         text: "Production wants the camera sensitivity lowered to cut stoppages. My team will not accept any lowering until we know the real false-reject rate. Escapes are what Quality is judged on. Please tell me before the Steering Committee whether Neemrana goes live with the current settings.",
       },
-      { kind: "p", text: "Lakshmi" },
+      { kind: "p", text: "Regards,\nLakshmi" },
     ],
     responseType: "standard",
   },
@@ -425,12 +422,12 @@ export const items: InBasketItem[] = [
     formatLabel: "WhatsApp message",
     shortTitle: "Shift Lead — floor rumour and the super-users",
     sender: "Imran Shaikh",
-    sentShort: "Sun 22:15",
+    sentShort: "Sun 10:15 PM",
     subject: "WhatsApp message",
     preview: "Ma’am, sorry to message late. The story on the floor tonight is that once Drishti goes to Neemrana…",
     headers: [
       { label: "From", value: "Imran Shaikh (Shift Lead – Inspection, Dharwad)" },
-      { label: "Received", value: "Sunday 18 October, 22:15" },
+      { label: "Received", value: "Sunday 18 October, 10:15 PM" },
     ],
     blocks: [
       {
@@ -438,7 +435,7 @@ export const items: InBasketItem[] = [
         messages: [
           "Ma’am, sorry to message late. The story on the floor tonight is that once Drishti goes to Neemrana, manual inspectors in both plants will be cut. Night-shift inspectors are asking me directly and I have nothing to tell them.",
           "One more thing. Pooja and Arjun say Deepak sir’s launch team has asked them to join from 1 November. They are the only two who can reset the cameras when they stop. We had three stoppages on night shift this week. People used manual override and did not log it.",
-          "I need something I can tell my team before second shift starts at 14:00 tomorrow.",
+          "I need something I can tell my team before second shift starts at 2:00 PM tomorrow.",
         ],
       },
     ],
@@ -450,29 +447,29 @@ export const items: InBasketItem[] = [
     formatLabel: "Email with attached memo",
     shortTitle: "Line supervisors — written assurance before roll-out (with HR memo)",
     sender: "M. Gowda",
-    sentShort: "Fri 16:30",
+    sentShort: "Fri 4:30 PM",
     subject: "Assurance before Neemrana roll-out",
     preview: "Before Drishti comes to Neemrana, we request written confirmation that no inspector will lose his job…",
     headers: [
       {
         label: "From",
-        value: "M. Gowda, Senior Line Supervisor – Neemrana (on behalf of 14 line supervisors, Dharwad and Neemrana)",
+        value: "M. Gowda (Senior Line Supervisor – Neemrana), on behalf of 14 line supervisors, Dharwad and Neemrana",
       },
-      { label: "To", value: "Ananya Kulkarni" },
-      { label: "Cc", value: "Farhan Qureshi, Vikrant Desai" },
-      { label: "Sent", value: "Friday 16 October, 16:30" },
+      { label: "To", value: "Ananya Kulkarni (Manager – Manufacturing Excellence)" },
+      { label: "Cc", value: "Farhan Qureshi (Plant Head – Neemrana), Vikrant Desai (Plant Head – Dharwad)" },
+      { label: "Sent", value: "Friday 16 October, 4:30 PM" },
     ],
     blocks: [
-      { kind: "p", text: "Madam," },
+      { kind: "p", text: "Dear Madam," },
       {
         kind: "p",
         text: "Before Drishti comes to Neemrana, we request written confirmation that no inspector will lose his job or be transferred out of his plant. Please reply by Friday 23 October. Without this, supervisors will find it difficult to release inspectors for the Drishti training batches.",
       },
-      { kind: "p", text: "M. Gowda" },
+      { kind: "p", text: "Regards,\nM. Gowda" },
       {
         kind: "attachment",
         heading:
-          "Attached memo – from Neha Saxena, HR Business Partner – Manufacturing, to the Drishti project team (Thursday 15 October):",
+          "Attached memo – from Neha Saxena (HR Business Partner – Manufacturing) to the Drishti project team, Thursday 15 October:",
         blocks: [
           {
             kind: "p",
@@ -521,13 +518,13 @@ export const items: InBasketItem[] = [
     formatLabel: "Email",
     shortTitle: "Vendor — Operator Readiness Score",
     sender: "Karthik Rao",
-    sentShort: "Thu 12:10",
+    sentShort: "Thu 12:10 PM",
     subject: "Operator Readiness Score – ready to share",
     preview: "As discussed with your team, our Operator Readiness Score now ranks all 230 inspection staff across both plants…",
     headers: [
-      { label: "From", value: "Karthik Rao, Account Manager, VisionEdge Analytics" },
-      { label: "To", value: "Ananya Kulkarni" },
-      { label: "Sent", value: "Thursday 15 October, 12:10" },
+      { label: "From", value: "Karthik Rao (Account Manager, VisionEdge Analytics)" },
+      { label: "To", value: "Ananya Kulkarni (Manager – Manufacturing Excellence)" },
+      { label: "Sent", value: "Thursday 15 October, 12:10 PM" },
     ],
     blocks: [
       { kind: "p", text: "Dear Ananya," },
@@ -540,7 +537,7 @@ export const items: InBasketItem[] = [
         text: "The score has not yet been checked against how people actually perform on Drishti. A validation study would take about ten weeks. We suggest you use the ranked list now to decide who is retrained and who is redeployed, and run the validation in parallel.",
       },
       { kind: "p", text: "Shall we send the list on Wednesday?" },
-      { kind: "p", text: "Karthik" },
+      { kind: "p", text: "Regards,\nKarthik" },
     ],
     responseType: "standard",
   },
@@ -550,22 +547,24 @@ export const items: InBasketItem[] = [
     formatLabel: "Training report and forwarded article",
     shortTitle: "L&D — training status and forwarded article",
     sender: "Ritu Sharma",
-    sentShort: "Fri 15:20",
+    sentShort: "Fri 3:20 PM",
     subject: "Drishti training status",
     preview: "Dharwad: 100% of inspection and line staff have completed the vendor’s two-hour e-module…",
     headers: [
-      { label: "From", value: "Ritu Sharma, L&D Coordinator – Manufacturing" },
+      { label: "From", value: "Ritu Sharma (L&D Coordinator – Manufacturing)" },
       { label: "To", value: "Drishti project team" },
-      { label: "Sent", value: "Friday 16 October, 15:20" },
+      { label: "Sent", value: "Friday 16 October, 3:20 PM" },
     ],
     blocks: [
+      { kind: "p", text: "Hi team," },
       {
         kind: "p",
         text: "Dharwad: 100% of inspection and line staff have completed the vendor’s two-hour e-module, with an average quiz score of 86%. Neemrana: batch 1 starts on Friday 23 October with the same module. The module is the vendor’s standard version and does not use our lines or parts. No refresher is planned.",
       },
+      { kind: "p", text: "Regards,\nRitu" },
       {
         kind: "forward",
-        heading: "Forwarded by Suresh Iyengar on Saturday 17 October, with no message:",
+        heading: "Forwarded by Suresh Iyengar (Head – Manufacturing Excellence) on Saturday 17 October, with no message:",
         blocks: [
           {
             kind: "p",
@@ -582,19 +581,19 @@ export const items: InBasketItem[] = [
     formatLabel: "Email",
     shortTitle: "Suresh — one-page recommendation for the Steering Committee",
     sender: "Suresh Iyengar",
-    sentShort: "Sun 20:30",
-    subject: "Your recommendation for Wednesday – by Tuesday 18:00",
+    sentShort: "Sun 8:30 PM",
+    subject: "Your recommendation for Wednesday – by Tuesday 6:00 PM",
     preview: "Welcome back. I have held everything that needed you. For Wednesday’s Steering Committee I need your recommendation…",
     headers: [
-      { label: "From", value: "Suresh Iyengar, Head – Manufacturing Excellence" },
-      { label: "To", value: "Ananya Kulkarni" },
-      { label: "Sent", value: "Sunday 18 October, 20:30" },
+      { label: "From", value: "Suresh Iyengar (Head – Manufacturing Excellence)" },
+      { label: "To", value: "Ananya Kulkarni (Manager – Manufacturing Excellence)" },
+      { label: "Sent", value: "Sunday 18 October, 8:30 PM" },
     ],
     blocks: [
-      { kind: "p", text: "Ananya," },
+      { kind: "p", text: "Hi Ananya," },
       {
         kind: "p",
-        text: "Welcome back. I have held everything that needed you. For Wednesday’s Steering Committee I need your recommendation on one page, by Tuesday 18:00:",
+        text: "Welcome back. I have held everything that needed you. For Wednesday’s Steering Committee I need your recommendation on one page, by Tuesday 6:00 PM:",
       },
       {
         kind: "bullets",
@@ -609,7 +608,7 @@ export const items: InBasketItem[] = [
         kind: "p",
         text: "The plant heads want speed, Quality wants no loosening, Finance wants a firm number and HR wants care with anything in writing. Arvind will want a clear view. I will back a clear view; I won’t back a hedge.",
       },
-      { kind: "p", text: "Suresh" },
+      { kind: "p", text: "Regards,\nSuresh" },
     ],
     responseType: "recommendation",
   },

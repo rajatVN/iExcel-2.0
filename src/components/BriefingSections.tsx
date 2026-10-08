@@ -26,18 +26,22 @@ export function OrganisationContext() {
   const c = organisationContext;
   return (
     <div className="prose-item text-[15px] text-ink-soft">
-      <p>{c.intro}</p>
-      <p>{c.pressuresLead}</p>
-      <ul className="mb-4 space-y-2 pl-1">
-        {c.pressures.map((p) => (
-          <li key={p.label} className="flex gap-3 leading-relaxed">
-            <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
-            <span>
-              <strong className="font-semibold text-ink">{p.label}</strong> {p.text}
-            </span>
-          </li>
-        ))}
-      </ul>
+      <figure className="mb-2 overflow-hidden rounded-lg border border-line bg-white">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={c.image} alt="" className="h-auto w-full" />
+        {/* The infographic's text, for screen readers. */}
+        <figcaption className="sr-only">
+          <p>{c.intro}</p>
+          <p>{c.pressuresLead}</p>
+          <ul>
+            {c.pressures.map((p) => (
+              <li key={p.label}>
+                {p.label} {p.text}
+              </li>
+            ))}
+          </ul>
+        </figcaption>
+      </figure>
       <H3>{c.drishtiHeading}</H3>
       <p>{c.drishti}</p>
       <div className="mt-4 overflow-hidden rounded-lg border border-line">

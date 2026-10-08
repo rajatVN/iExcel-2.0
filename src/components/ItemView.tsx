@@ -23,7 +23,7 @@ function Blocks({ blocks }: { blocks: Block[] }) {
 function BlockView({ block }: { block: Block }) {
   switch (block.kind) {
     case "p":
-      return <p>{block.text}</p>;
+      return <p className="whitespace-pre-line">{block.text}</p>;
     case "bullets":
       return (
         <ul className="mb-4 space-y-1.5 pl-1">

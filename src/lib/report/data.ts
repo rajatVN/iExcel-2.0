@@ -60,12 +60,14 @@ function fmtDateTime(d: Date, tz: string): string {
     day: "numeric",
     month: "short",
     year: "numeric",
-    hour: "2-digit",
+    hour: "numeric",
     minute: "2-digit",
     second: "2-digit",
-    hour12: false,
+    hour12: true,
     timeZoneName: "short",
-  }).format(d);
+  })
+    .format(d)
+    .replace(/\b(am|pm)\b/, (m) => m.toUpperCase());
 }
 
 export function fmtDuration(ms: number): string {

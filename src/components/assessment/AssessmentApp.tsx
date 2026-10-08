@@ -424,7 +424,7 @@ export function AssessmentApp({
         <aside className="pane-scroll hidden w-[340px] shrink-0 overflow-y-auto border-r border-line bg-white md:block xl:w-[370px]">
           <div className="sticky top-0 z-10 flex items-baseline justify-between border-b border-line bg-white/95 px-5 py-4 backdrop-blur">
             <h2 className="text-lg font-semibold tracking-tight">Inbox</h2>
-            <span className="text-xs text-ink-faint">Monday 19 October · 07:30</span>
+            <span className="text-xs text-ink-faint">Monday 19 October · 7:30 AM</span>
           </div>
           <ul>
             {items.map((it) => {

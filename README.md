@@ -72,7 +72,7 @@ The schema (`db/schema.sql`) is applied automatically and is idempotent. Row Lev
 
 ```
 db/schema.sql                 Postgres schema (Supabase / PGlite)
-src/content/drishti.ts        Candidate-facing content (sections B–H), verbatim
+src/content/drishti.ts        Candidate-facing content (sections B–H), adapted for online use
 src/lib/                      config, db adapter, auth, sessions, admin queries
 src/lib/report/               report data, DOCX + PDF renderers
 src/app/                      pages (login, dashboard, briefing, assessment, complete, admin) and API routes
@@ -83,4 +83,5 @@ assets/fonts/                 Noto Sans (SIL OFL) for PDF output
 ## Notes
 
 - The source `.docx` contains confidential assessor material and is excluded by `.gitignore`.
-- The organisation chart image (`public/organisation-structure.png`) is taken from the source document. It labels Arvind Choudhary as Managing Director, while the table in Section C lists him as COO. This inconsistency is in the source.
+- The briefing uses two infographics: `public/organisation-context.webp` (company, plants and the three pressures) and `public/organisation-structure.webp` (organisation chart, with Arvind Choudhary as COO).
+- Item content is adapted from the source: times use the 12-hour clock, email headers give each person's role in brackets, and emails open with a greeting and close with "Regards".

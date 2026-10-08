@@ -10,11 +10,13 @@ export function fmt(d: Date | null | undefined): string {
     timeZone: reportTimeZone(),
     day: "numeric",
     month: "short",
-    hour: "2-digit",
+    hour: "numeric",
     minute: "2-digit",
     second: "2-digit",
-    hour12: false,
-  }).format(d);
+    hour12: true,
+  })
+    .format(d)
+    .replace(/\b(am|pm)\b/, (m) => m.toUpperCase());
 }
 
 export function mmss(ms: number): string {

@@ -4,7 +4,6 @@ import { ArrowLeft } from "lucide-react";
 import { getCandidate } from "@/lib/auth";
 import { getCandidateSession } from "@/lib/sessions";
 import { assessmentDurationMinutes } from "@/lib/config";
-import { participantNote } from "@/content/drishti";
 import { CandidateShell } from "@/components/CandidateShell";
 import { BRIEFING_SECTIONS, BriefingSection } from "@/components/BriefingSections";
 import { StartAssessmentButton } from "@/components/StartAssessmentButton";
@@ -36,9 +35,6 @@ export default async function BriefingPage() {
         </aside>
         <main className="min-w-0">
           <h1 className="text-3xl font-semibold tracking-tight">Candidate briefing</h1>
-          <div className="mt-5 rounded-2xl border border-brand-100 bg-brand-50/70 p-5 text-[15px] leading-relaxed text-ink">
-            {participantNote}
-          </div>
           {BRIEFING_SECTIONS.map((s) => (
             <section key={s.id} id={s.id} className="mt-6 scroll-mt-24 rounded-2xl border border-line bg-white p-7 sm:p-8">
               <h2 className="mb-5 text-xl font-semibold tracking-tight">{s.title}</h2>
