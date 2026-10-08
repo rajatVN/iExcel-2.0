@@ -4,7 +4,6 @@ import { getCandidate } from "@/lib/auth";
 import { getCandidateSession } from "@/lib/sessions";
 import { CandidateShell } from "@/components/CandidateShell";
 import { ClearLocalDraft } from "@/components/ClearLocalDraft";
-import { DownloadButtons } from "@/components/DownloadButtons";
 
 export const dynamic = "force-dynamic";
 
@@ -33,19 +32,8 @@ export default async function CompletePage() {
           <h1 className="mt-5 text-2xl font-semibold tracking-tight">
             {timeout ? "Assessment time has ended." : "Assessment submitted successfully."}
           </h1>
-          <p className="mt-2 text-[15px] text-ink-soft">
-            {timeout
-              ? "Your responses have been automatically submitted and recorded."
-              : "Your responses have been recorded."}
-          </p>
-          <div className="mx-auto mt-8 max-w-sm border-t border-line pt-8">
-            <div className="mb-4 text-xs font-semibold uppercase tracking-[0.12em] text-ink-faint">
-              Download response report
-            </div>
-            <div className="flex justify-center">
-              <DownloadButtons sessionId={session.id} />
-            </div>
-          </div>
+          <p className="mt-3 text-[15px] text-ink-soft">Thank you for attempting this assessment.</p>
+          <p className="mt-1 text-[15px] text-ink-soft">Your responses have been recorded.</p>
         </div>
         <p className="mt-6 text-center text-xs text-ink-faint">
           Your responses can no longer be edited. You may now close this window.
