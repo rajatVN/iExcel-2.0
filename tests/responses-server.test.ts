@@ -30,7 +30,7 @@ async function candidateId(code: string) {
 describe("Say now / Hold storage", () => {
   let sessionId: string;
   beforeAll(async () => {
-    sessionId = (await startSession(await candidateId("CAND001"))).id;
+    sessionId = (await startSession(await candidateId("C01"))).id;
   });
 
   it("migration is safe to run more than once", async () => {

@@ -23,7 +23,7 @@ On first start the app creates and seeds an embedded PostgreSQL database in `./.
 
 | Who | Login |
 | --- | --- |
-| Pilot candidates | `CAND001` … `CAND010`, access code `DRISHTI2026` (seeded in `src/lib/seed.ts`) |
+| Pilot candidates | `C01` … `C25`, access code `login-<ID>` (e.g. `C05` / `login-C05`) (seeded in `src/lib/seed.ts`) |
 | Admin | http://localhost:3000/admin, code = `ADMIN_ACCESS_CODE` in `.env.local` |
 
 Each candidate gets **one** attempt. Use a different candidate ID to test again, or wipe the local database (stop the dev server first):

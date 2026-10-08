@@ -57,7 +57,7 @@ export function LoginForm({ mode }: { mode: "candidate" | "admin" }) {
             id="candidateCode"
             name="candidateCode"
             className={`${inputCls} uppercase tracking-wide placeholder:normal-case`}
-            placeholder="e.g. CAND001"
+            placeholder="e.g. C05"
             autoComplete="username"
             autoCapitalize="characters"
             required

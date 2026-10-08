@@ -173,7 +173,7 @@ export async function buildReportData(sessionId: string): Promise<ReportData> {
   };
 }
 
-/** File-name-safe base name, e.g. "CAND001_Drishti_InBasket_Responses". */
+/** File-name-safe base name, e.g. "C05_Drishti_InBasket_Responses". */
 export function reportBaseName(d: ReportData): string {
   return `${d.candidate.code.replace(/[^A-Za-z0-9_-]/g, "")}_Drishti_InBasket_Responses`;
 }
