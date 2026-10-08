@@ -433,8 +433,8 @@ export function AssessmentApp({
                     onClick={() => setSelected(it.id)}
                     aria-current={active ? "true" : undefined}
                     aria-label={`Item ${it.id}: ${it.sender} – ${it.format === "whatsapp" ? it.formatLabel : it.subject}`}
-                    className={`relative flex w-full gap-3 border-b border-line px-5 py-4 text-left transition ${
-                      active ? "bg-brand-50/80" : "hover:bg-slate-50"
+                    className={`group relative flex w-full gap-3 border-b border-line px-5 py-4 text-left transition ${
+                      active ? "bg-brand-50/80" : "hover:bg-canvas"
                     }`}
                   >
                     {active && <span className="absolute inset-y-0 left-0 w-[3px] bg-brand-500" />}
@@ -449,10 +449,12 @@ export function AssessmentApp({
                         <span className="ml-auto shrink-0 text-xs tabular-nums text-ink-faint">{it.sentShort}</span>
                       </span>
                       <span className="mt-0.5 block truncate text-sm font-semibold text-ink">{it.sender}</span>
-                      <span className="block truncate text-[13px] font-medium text-ink-soft">
+                      <span className="block truncate text-[13px] font-medium text-ink-soft group-hover:text-ink">
                         {it.format === "whatsapp" ? it.formatLabel : it.subject}
                       </span>
-                      <span className="mt-1 line-clamp-2 text-[13px] leading-snug text-ink-faint">{it.preview}</span>
+                      <span className="mt-1 line-clamp-2 text-[13px] leading-snug text-ink-faint group-hover:text-ink-soft">
+                        {it.preview}
+                      </span>
                       <span className="mt-2 flex items-center gap-2">
                         <StatusChip state={state} />
                         {prio && <PriorityChip p={prio} />}

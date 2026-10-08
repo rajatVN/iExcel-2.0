@@ -18,7 +18,10 @@ export const metadata: Metadata = {
  * in /public (e.g. /public/brand/organisation-logo.svg) and set the path here.
  * While null, a neutral placeholder is shown.
  */
-const ORGANISATION_LOGO: { src: string; alt: string } | null = null;
+const ORGANISATION_LOGO: { src: string; alt: string } | null = {
+  src: "/brand/organisation-logo.png",
+  alt: "Bajaj",
+};
 
 export default async function LoginPage() {
   if (await getCandidate()) redirect("/dashboard");
@@ -44,7 +47,7 @@ export default async function LoginPage() {
         <div className="relative">
           {ORGANISATION_LOGO ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={ORGANISATION_LOGO.src} alt={ORGANISATION_LOGO.alt} className="h-10 w-auto" />
+            <img src={ORGANISATION_LOGO.src} alt={ORGANISATION_LOGO.alt} className="h-16 w-auto" />
           ) : (
             <div
               className="flex h-10 w-40 items-center justify-center rounded-md border border-dashed border-white/20 text-[11px] font-medium uppercase tracking-[0.14em] text-blue-100/40"
