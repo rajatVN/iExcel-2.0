@@ -107,30 +107,6 @@ export function YourRole() {
       {yourRole.paragraphs.map((p) => (
         <p key={p.slice(0, 20)}>{p}</p>
       ))}
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-lg border border-emerald-200 bg-emerald-50/60 p-4">
-          <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-emerald-800">You can</div>
-          <ul className="space-y-2 text-sm text-ink">
-            {yourRole.canDo.map((t) => (
-              <li key={t} className="flex gap-2 leading-snug">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600" />
-                {t}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="rounded-lg border border-rose-200 bg-rose-50/60 p-4">
-          <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-rose-800">You cannot</div>
-          <ul className="space-y-2 text-sm text-ink">
-            {yourRole.cannotDo.map((t) => (
-              <li key={t} className="flex gap-2 leading-snug">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-rose-600" />
-                {t}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
     </div>
   );
 }

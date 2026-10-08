@@ -55,7 +55,7 @@ export const ITEM_COUNT = 9;
 /* ------------------------------------------------------------------------ */
 
 export const participantNote =
-  "To the participant. You will play the role of Ananya Kulkarni at a fictional company. Read Sections B to G first, then work through the nine items in Section H. You have 30 minutes in total. Everything you need is in this pack.";
+  "To the participant. You will play the role of Ananya Kulkarni at a fictional company. Read the briefing sections first, then work through the nine items in your inbox. You have 30 minutes in total. Everything you need is in this pack.";
 
 /* ------------------------------------------------------------------------ */
 /* B. Organisation Context                                                   */
@@ -202,17 +202,6 @@ export const yourRole = {
     "You are Ananya Kulkarni, Manager – Manufacturing Excellence. You have been with Aaravi for nine years. Your background is in lean manufacturing and process improvement, and you have led several improvement projects on the shop floor. You report to Suresh Iyengar. You have been based at Dharwad for the pilot.",
     "Drishti is your first project with automated, camera-based inspection. So far you have relied on the vendor, VisionEdge, and on your two super-users, Pooja and Arjun, for technical questions such as how the system decides what to reject.",
   ],
-  canDo: [
-    "Decide the roll-out plan and recommend go-live dates to the Steering Committee",
-    "Decide Drishti training content, with L&D",
-    "Assign work within your project team",
-    "Recommend figures and decisions to Suresh and the Steering Committee",
-  ],
-  cannotDo: [
-    "Commit the company on jobs, transfers, pay or anything covered by the union settlement (this needs HR and the plant head)",
-    "Approve spending outside the project budget (this goes through Suresh)",
-    "Change camera settings without Quality’s agreement",
-  ],
 };
 
 /* ------------------------------------------------------------------------ */
@@ -221,7 +210,7 @@ export const yourRole = {
 
 export const immediateSituation = [
   "It is 07:30 on Monday 19 October 2026. You came back late last night from a one-week residential leadership programme. Before you left, you agreed with Suresh that you would not be contacted except in an emergency. Suresh handled routine matters but did not commit you on anything important. Everything that needed you has been held.",
-  "The nine items in Section H are in your inbox and on your desk. None of them has been answered. Your first meeting is at 09:30. You cannot reach anyone before then, so you need to decide now what you will do, in what order, and what you will say.",
+  "The nine items are in your inbox and on your desk. None of them has been answered. Your first meeting is at 09:30. You cannot reach anyone before then, so you need to decide now what you will do, in what order, and what you will say.",
 ];
 
 /* ------------------------------------------------------------------------ */

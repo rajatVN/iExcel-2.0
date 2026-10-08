@@ -29,7 +29,6 @@ export default async function BriefingPage() {
             <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-ink-faint">Candidate pack</div>
             {BRIEFING_SECTIONS.map((s) => (
               <a key={s.id} href={`#${s.id}`} className="block rounded-lg px-3 py-2 text-ink-soft hover:bg-white hover:text-ink">
-                <span className="mr-2 text-ink-faint">{s.letter}.</span>
                 {s.title}
               </a>
             ))}
@@ -42,8 +41,7 @@ export default async function BriefingPage() {
           </div>
           {BRIEFING_SECTIONS.map((s) => (
             <section key={s.id} id={s.id} className="mt-6 scroll-mt-24 rounded-2xl border border-line bg-white p-7 sm:p-8">
-              <div className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-faint">Section {s.letter}</div>
-              <h2 className="mb-5 mt-1 text-xl font-semibold tracking-tight">{s.title}</h2>
+              <h2 className="mb-5 text-xl font-semibold tracking-tight">{s.title}</h2>
               <BriefingSection id={s.id} />
             </section>
           ))}

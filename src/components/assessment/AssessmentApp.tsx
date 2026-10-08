@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  BookOpen,
   Building2,
   CalendarDays,
   Check,
@@ -542,10 +541,6 @@ export function AssessmentApp({
               </button>
             </div>
             <div className="pane-scroll flex-1 overflow-y-auto px-8 py-6">
-              <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
-                <BookOpen className="h-4 w-4" />
-                Section {BRIEFING_SECTIONS.find((s) => s.id === drawer)!.letter}
-              </div>
               <h2 className="mb-5 text-2xl font-semibold tracking-tight">
                 {BRIEFING_SECTIONS.find((s) => s.id === drawer)!.title}
               </h2>
