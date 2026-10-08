@@ -1,3 +1,13 @@
+/**
+ * Organisation logo (white/reversed, for navy backgrounds), shown on the login
+ * panel and the candidate header. Replace the file in /public/brand or set to
+ * null to hide it (the login page then shows a neutral placeholder).
+ */
+export const ORGANISATION_LOGO: { src: string; alt: string } | null = {
+  src: "/brand/organisation-logo.png",
+  alt: "Bajaj",
+};
+
 /** Product mark + wordmark. */
 export function BrandMark({ className = "h-8 w-8" }: { className?: string }) {
   return (

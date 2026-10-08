@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { LockKeyhole } from "lucide-react";
 import { getCandidate } from "@/lib/auth";
-import { Brand, BrandMark } from "@/components/Brand";
+import { Brand, BrandMark, ORGANISATION_LOGO } from "@/components/Brand";
 import { LoginForm } from "@/components/LoginForm";
 
 export const dynamic = "force-dynamic";
@@ -11,16 +11,6 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "iExcel 2.0 · Sign in",
   description: "iExcel 2.0 behavioural assessment",
-};
-
-/**
- * Organisation logo for the login panel. Place an approved, white/reversed logo
- * in /public (e.g. /public/brand/organisation-logo.svg) and set the path here.
- * While null, a neutral placeholder is shown.
- */
-const ORGANISATION_LOGO: { src: string; alt: string } | null = {
-  src: "/brand/organisation-logo.png",
-  alt: "Bajaj",
 };
 
 export default async function LoginPage() {
@@ -63,11 +53,6 @@ export default async function LoginPage() {
           <h1 className="mt-8 text-5xl font-semibold leading-[1.05] tracking-tight">iExcel 2.0</h1>
           <div className="mt-5 h-px w-12 bg-brand-500" />
           <p className="mt-5 text-lg text-blue-100/75">Behavioural assessment</p>
-        </div>
-
-        <div className="relative flex items-center gap-2 text-xs text-blue-200/50">
-          <LockKeyhole className="h-3.5 w-3.5" />
-          Secure candidate access
         </div>
       </section>
 
