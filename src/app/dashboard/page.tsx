@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BookOpen, Clock, Inbox, UserRound } from "lucide-react";
 import { getCandidate } from "@/lib/auth";
-import { getCandidateSession } from "@/lib/sessions";
+import { getAttemptAllowance, getCandidateSession } from "@/lib/sessions";
 import { assessmentDurationMinutes } from "@/lib/config";
 import { ITEM_COUNT, ROLE_NAME, ROLE_TITLE } from "@/content/drishti";
 import { CandidateShell } from "@/components/CandidateShell";
@@ -14,10 +14,14 @@ export default async function DashboardPage() {
   const candidate = await getCandidate();
   if (!candidate) redirect("/");
   const session = await getCandidateSession(candidate.id);
-  if (session?.status === "submitted") redirect("/complete");
+  const allowance = await getAttemptAllowance(candidate.id);
+  // A submitted candidate only comes back here when the admin has released a retest.
+  if (session?.status === "submitted" && !allowance.canStartNew) redirect("/complete");
 
   const inProgress = session?.status === "in_progress";
-  const minutes = session?.duration_minutes ?? assessmentDurationMinutes();
+  const attempt = inProgress ? session.attempt_number : allowance.taken + 1;
+  const isRetest = attempt > 1;
+  const minutes = inProgress ? session.duration_minutes : assessmentDurationMinutes();
   const remainingMin = session
     ? Math.max(0, Math.ceil((session.expires_at.getTime() - session.db_now.getTime()) / 60000))
     : null;
@@ -33,6 +37,11 @@ export default async function DashboardPage() {
                 iExcel 2.0 · In-Basket Assessment
               </div>
               <h1 className="mt-3 text-4xl font-semibold tracking-tight">Project Drishti</h1>
+              {isRetest && (
+                <p className="mt-3 inline-flex rounded-full bg-brand-50 px-3 py-1 text-sm font-semibold text-brand-700 ring-1 ring-inset ring-brand-100">
+                  Retest – Attempt {attempt}
+                </p>
+              )}
               <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-ink-soft">
                 You will play the role of a manager at a fictional company who has just returned from a week away to
                 find nine items waiting. Read the briefing first. Then, for each item, decide its priority, what you
@@ -40,7 +49,8 @@ export default async function DashboardPage() {
                 outline of a one-page recommendation.
               </p>
               <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-ink-soft">
-                The timer starts only when you select <strong className="text-ink">Start assessment</strong>. Your
+                The timer starts only when you select{" "}
+                <strong className="text-ink">{isRetest ? "Start retest" : "Start assessment"}</strong>. Your
                 responses save automatically as you work.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
@@ -50,11 +60,11 @@ export default async function DashboardPage() {
                 >
                   <BookOpen className="h-4 w-4" /> View instructions
                 </Link>
-                <StartAssessmentButton durationMinutes={minutes} resume={inProgress} />
+                <StartAssessmentButton durationMinutes={minutes} resume={inProgress} retest={isRetest} />
               </div>
               {inProgress && (
                 <p className="mt-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">
-                  Your assessment is in progress — about {remainingMin} minute{remainingMin === 1 ? "" : "s"} left. The
+                  Your {isRetest ? "retest" : "assessment"} is in progress — about {remainingMin} minute{remainingMin === 1 ? "" : "s"} left. The
                   timer has kept running.
                 </p>
               )}

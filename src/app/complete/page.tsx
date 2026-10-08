@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { CheckCircle2, TimerOff } from "lucide-react";
 import { getCandidate } from "@/lib/auth";
-import { getCandidateSession } from "@/lib/sessions";
+import { getAttemptAllowance, getCandidateSession } from "@/lib/sessions";
 import { CandidateShell } from "@/components/CandidateShell";
 import { ClearLocalDraft } from "@/components/ClearLocalDraft";
 
@@ -13,6 +13,7 @@ export default async function CompletePage() {
   const session = await getCandidateSession(candidate.id);
   if (!session) redirect("/dashboard");
   if (session.status !== "submitted") redirect("/assessment");
+  if ((await getAttemptAllowance(candidate.id)).canStartNew) redirect("/dashboard"); // retest released
 
   const timeout = session.submission_reason === "timeout";
   const Icon = timeout ? TimerOff : CheckCircle2;

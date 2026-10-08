@@ -19,7 +19,7 @@ const Body = z.object({
 });
 
 export async function POST(req: Request) {
-  const ctx = await candidateContext();
+  const ctx = await candidateContext(req);
   if (!ctx.ok) return ctx.response;
   if (!ctx.session) return errorJson("not_started", 404);
   if (ctx.session.status !== "in_progress") return json({ ok: true, ignored: true });

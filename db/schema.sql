@@ -16,6 +16,9 @@ create table if not exists candidates (
   role              text,
   -- Pilot login only. scrypt hash: "scrypt$<salt hex>$<hash hex>"
   access_code_hash  text not null,
+  -- Attempts this candidate may take. 1 normally; the admin raises it to
+  -- release a retest. Candidates can never start an attempt beyond it.
+  max_attempts      integer not null default 1 check (max_attempts >= 1),
   created_at        timestamptz not null default now()
 );
 
@@ -32,6 +35,8 @@ create table if not exists assessment_sessions (
   id                 uuid primary key default gen_random_uuid(),
   candidate_id       uuid not null references candidates(id),
   assessment_id      uuid not null references assessments(id),
+  -- 1 for the first attempt, 2 for the first retest, …
+  attempt_number     integer not null default 1 check (attempt_number >= 1),
   -- Authoritative timing, always set from the database clock.
   started_at         timestamptz not null,
   expires_at         timestamptz not null,
@@ -42,12 +47,20 @@ create table if not exists assessment_sessions (
   submission_reason  text check (submission_reason in ('manual', 'timeout')),
   created_at         timestamptz not null default now(),
   updated_at         timestamptz not null default now(),
-  -- One attempt per candidate per assessment: re-opening never starts a new timer.
-  unique (candidate_id, assessment_id),
+  -- One row per attempt (see assessment_sessions_attempt_idx below):
+  -- re-opening never starts a new timer.
   check (expires_at > started_at),
   check ((status = 'submitted') = (submitted_at is not null)),
   check ((status = 'submitted') = (submission_reason is not null))
 );
+
+-- Migration (idempotent): numbered attempts so an admin can release a retest.
+-- Replaces the old one-attempt-per-candidate unique constraint.
+alter table candidates add column if not exists max_attempts integer not null default 1;
+alter table assessment_sessions add column if not exists attempt_number integer not null default 1;
+alter table assessment_sessions drop constraint if exists assessment_sessions_candidate_id_assessment_id_key;
+create unique index if not exists assessment_sessions_attempt_idx
+  on assessment_sessions (candidate_id, assessment_id, attempt_number);
 
 create table if not exists assessment_responses (
   id                   uuid primary key default gen_random_uuid(),

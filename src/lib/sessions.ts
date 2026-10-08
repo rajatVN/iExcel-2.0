@@ -15,6 +15,7 @@ export interface SessionRow {
   id: string;
   candidate_id: string;
   assessment_id: string;
+  attempt_number: number;
   started_at: Date;
   expires_at: Date;
   duration_minutes: number;
@@ -57,7 +58,7 @@ export type ResponseFields = Partial<Record<ResponseField, string | null>>;
 /** Max characters per text field — generous, just prevents abuse. */
 export const MAX_TEXT_LENGTH = 20_000;
 
-const SESSION_COLUMNS = `id, candidate_id, assessment_id, started_at, expires_at, duration_minutes,
+const SESSION_COLUMNS = `id, candidate_id, assessment_id, attempt_number, started_at, expires_at, duration_minutes,
   submitted_at, status, submission_reason, now() as db_now`;
 
 export class SessionError extends Error {
@@ -90,7 +91,7 @@ export async function recordEvent(
 }
 
 /**
- * The candidate's session for this assessment (or null if not started).
+ * The candidate's LATEST attempt for this assessment (or null if not started).
  * If time plus grace has fully elapsed, the session is finalised as a timeout
  * first — so a candidate who closed the browser is still submitted.
  */
@@ -98,7 +99,8 @@ export async function getCandidateSession(candidateId: string): Promise<SessionR
   const db = await getDb();
   const assessmentId = await getAssessmentId(db);
   const rows = await db.query<SessionRow>(
-    `select ${SESSION_COLUMNS} from assessment_sessions where candidate_id = $1 and assessment_id = $2`,
+    `select ${SESSION_COLUMNS} from assessment_sessions where candidate_id = $1 and assessment_id = $2
+      order by attempt_number desc limit 1`,
     [candidateId, assessmentId],
   );
   const session = rows[0];
@@ -122,16 +124,49 @@ async function finaliseIfOverdue(session: SessionRow): Promise<SessionRow> {
   return result.session;
 }
 
-/** Start the session. Idempotent: a second call returns the existing session — the timer never restarts. */
+/**
+ * Whether the candidate may start a new attempt: their latest attempt (if
+ * any) is submitted and the admin has allowed more attempts than they've taken.
+ */
+export async function getAttemptAllowance(
+  candidateId: string,
+): Promise<{ taken: number; maxAttempts: number; canStartNew: boolean }> {
+  const db = await getDb();
+  const assessmentId = await getAssessmentId(db);
+  const [r] = await db.query<{ taken: number; max_attempts: number; open: number }>(
+    `select coalesce(max(s.attempt_number), 0)::int as taken,
+            count(*) filter (where s.status = 'in_progress')::int as open,
+            (select max_attempts from candidates where id = $1) as max_attempts
+       from assessment_sessions s
+      where s.candidate_id = $1 and s.assessment_id = $2`,
+    [candidateId, assessmentId],
+  );
+  const maxAttempts = r?.max_attempts ?? 1;
+  const taken = r?.taken ?? 0;
+  return { taken, maxAttempts, canStartNew: (r?.open ?? 0) === 0 && taken < maxAttempts };
+}
+
+/**
+ * Start the next attempt, if one is allowed. Idempotent: while an attempt is
+ * in progress (or none is allowed) this returns the latest attempt — the timer
+ * never restarts.
+ */
 export async function startSession(candidateId: string): Promise<SessionRow> {
   const db = await getDb();
   const assessmentId = await getAssessmentId(db);
   const minutes = assessmentDurationMinutes();
+  // The allowance check and the attempt number are computed in the insert
+  // itself; the unique (candidate, assessment, attempt) index stops a double start.
   const inserted = await db.query<SessionRow>(
     `insert into assessment_sessions
-       (candidate_id, assessment_id, started_at, expires_at, duration_minutes)
-     values ($1, $2, now(), now() + make_interval(mins => $3::int), $3::int)
-     on conflict (candidate_id, assessment_id) do nothing
+       (candidate_id, assessment_id, attempt_number, started_at, expires_at, duration_minutes)
+     select $1::uuid, $2::uuid, coalesce(max(s.attempt_number), 0) + 1,
+            now(), now() + make_interval(mins => $3::int), $3::int
+       from assessment_sessions s
+      where s.candidate_id = $1::uuid and s.assessment_id = $2::uuid
+     having coalesce(max(s.attempt_number), 0) < (select max_attempts from candidates where id = $1::uuid)
+        and count(*) filter (where s.status = 'in_progress') = 0
+     on conflict (candidate_id, assessment_id, attempt_number) do nothing
      returning ${SESSION_COLUMNS}`,
     [candidateId, assessmentId, minutes],
   );
@@ -144,7 +179,7 @@ export async function startSession(candidateId: string): Promise<SessionRow> {
         [s.id, item],
       );
     }
-    await recordEvent(db, s.id, "session_started", null, { duration_minutes: minutes });
+    await recordEvent(db, s.id, "session_started", null, { duration_minutes: minutes, attempt: s.attempt_number });
     return s;
   }
   const existing = await getCandidateSession(candidateId);
@@ -336,6 +371,7 @@ export async function submitSession(sessionId: string, intent: SubmissionReason)
 export function sessionDto(s: SessionRow) {
   return {
     id: s.id,
+    attemptNumber: s.attempt_number,
     status: s.status,
     startedAt: s.started_at.toISOString(),
     expiresAt: s.expires_at.toISOString(),

@@ -1,7 +1,7 @@
 import "server-only";
 import path from "node:path";
 import PDFDocument from "pdfkit";
-import type { ReportData, ReportItem } from "./data";
+import { attemptLabel, type ReportData, type ReportItem } from "./data";
 
 /**
  * PDF version of the candidate response report, laid out to mirror the DOCX.
@@ -75,6 +75,7 @@ export async function renderPdf(d: ReportData): Promise<Buffer> {
     ["Role", `${d.role.name}\n${d.role.title}`],
     ["Assessment", d.assessment.name],
     ["Version", d.assessment.version],
+    ["Attempt", attemptLabel(d)],
     ["Assessment started", d.startedAt],
     ["Assessment submitted", d.submittedAt],
     ["Duration (time used)", d.duration],

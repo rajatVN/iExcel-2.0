@@ -18,6 +18,8 @@ export interface ReportData {
   candidate: { name: string; code: string };
   role: { name: string; title: string };
   assessment: { name: string; version: string };
+  /** 1 for the first attempt, 2+ for retests. */
+  attemptNumber: number;
   startedAt: string;
   submittedAt: string;
   submittedAtDate: Date;
@@ -78,6 +80,7 @@ const nonEmpty = (v: unknown): v is string => typeof v === "string" && v.trim().
 export async function buildReportData(sessionId: string): Promise<ReportData> {
   const db = await getDb();
   const rows = await db.query<{
+    attempt_number: number;
     started_at: Date;
     expires_at: Date;
     submitted_at: Date | null;
@@ -89,7 +92,7 @@ export async function buildReportData(sessionId: string): Promise<ReportData> {
     assessment_name: string;
     assessment_version: string;
   }>(
-    `select s.started_at, s.expires_at, s.submitted_at, s.status, s.submission_reason, s.duration_minutes,
+    `select s.attempt_number, s.started_at, s.expires_at, s.submitted_at, s.status, s.submission_reason, s.duration_minutes,
             c.name as candidate_name, c.candidate_code,
             a.name as assessment_name, a.version as assessment_version
        from assessment_sessions s
@@ -159,6 +162,7 @@ export async function buildReportData(sessionId: string): Promise<ReportData> {
     candidate: { name: s.candidate_name, code: s.candidate_code },
     role: { name: ROLE_NAME, title: ROLE_TITLE },
     assessment: { name: ASSESSMENT_TITLE, version: s.assessment_version },
+    attemptNumber: s.attempt_number,
     startedAt: fmtDateTime(s.started_at, tz),
     submittedAt: fmtDateTime(s.submitted_at, tz),
     submittedAtDate: s.submitted_at,
@@ -173,7 +177,13 @@ export async function buildReportData(sessionId: string): Promise<ReportData> {
   };
 }
 
-/** File-name-safe base name, e.g. "C05_Drishti_InBasket_Responses". */
+/** Label for the report's info table, e.g. "1" or "2 (retest)". */
+export function attemptLabel(d: ReportData): string {
+  return d.attemptNumber > 1 ? `${d.attemptNumber} (retest)` : "1";
+}
+
+/** File-name-safe base name, e.g. "C05_Drishti_InBasket_Responses" (retests add "_Attempt2"). */
 export function reportBaseName(d: ReportData): string {
-  return `${d.candidate.code.replace(/[^A-Za-z0-9_-]/g, "")}_Drishti_InBasket_Responses`;
+  const attempt = d.attemptNumber > 1 ? `_Attempt${d.attemptNumber}` : "";
+  return `${d.candidate.code.replace(/[^A-Za-z0-9_-]/g, "")}_Drishti_InBasket_Responses${attempt}`;
 }

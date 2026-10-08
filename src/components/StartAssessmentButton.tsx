@@ -8,10 +8,12 @@ import { Modal } from "./Modal";
 export function StartAssessmentButton({
   durationMinutes,
   resume = false,
+  retest = false,
   className = "",
 }: {
   durationMinutes: number;
   resume?: boolean;
+  retest?: boolean;
   className?: string;
 }) {
   const router = useRouter();
@@ -25,7 +27,7 @@ export function StartAssessmentButton({
   if (resume) {
     return (
       <button className={`${btn} ${className}`} onClick={() => router.push("/assessment")}>
-        <Play className="h-4 w-4" /> Resume assessment
+        <Play className="h-4 w-4" /> Resume {retest ? "retest" : "assessment"}
       </button>
     );
   }
@@ -46,11 +48,11 @@ export function StartAssessmentButton({
   return (
     <>
       <button className={`${btn} ${className}`} onClick={() => setOpen(true)}>
-        <Play className="h-4 w-4" /> Start assessment
+        <Play className="h-4 w-4" /> Start {retest ? "retest" : "assessment"}
       </button>
       <Modal open={open} onClose={() => !busy && setOpen(false)} labelledBy="start-title" dismissable={!busy}>
         <h2 id="start-title" className="text-lg font-semibold tracking-tight">
-          Start the assessment now?
+          Start the {retest ? "retest" : "assessment"} now?
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-ink-soft">
           Your {durationMinutes}-minute timer starts as soon as you continue and cannot be paused. Refreshing the page or

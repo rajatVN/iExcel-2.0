@@ -60,6 +60,12 @@ export default async function AdminPage() {
                       <div className="mt-1 text-xs text-ink-faint">{r.reason === "timeout" ? "Time expired" : "Manual"}</div>
                     )}
                     {r.remaining && <div className="mt-1 text-xs tabular-nums text-ink-faint">{r.remaining} left</div>}
+                    {r.attemptNumber && r.attemptNumber > 1 && (
+                      <div className="mt-1 text-xs font-medium text-ink-soft">Retest – Attempt {r.attemptNumber}</div>
+                    )}
+                    {r.retestPending && (
+                      <div className="mt-1 text-xs font-semibold text-brand-700">Retest released</div>
+                    )}
                   </td>
                   <td className="px-4 py-3 tabular-nums text-ink-soft">{fmt(r.startedAt)}</td>
                   <td className="px-4 py-3 tabular-nums text-ink-soft">{fmt(r.submittedAt)}</td>

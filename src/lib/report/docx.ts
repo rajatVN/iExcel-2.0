@@ -17,7 +17,7 @@ import {
   WidthType,
   type IRunOptions,
 } from "docx";
-import type { ReportData, ReportItem } from "./data";
+import { attemptLabel, type ReportData, type ReportItem } from "./data";
 
 const NAVY = "14284B";
 const GREY = "5B6474";
@@ -65,6 +65,7 @@ function infoTable(d: ReportData): Table {
     ["Role", `${d.role.name}\n${d.role.title}`],
     ["Assessment", d.assessment.name],
     ["Version", d.assessment.version],
+    ["Attempt", attemptLabel(d)],
     ["Assessment started", d.startedAt],
     ["Assessment submitted", d.submittedAt],
     ["Duration (time used)", d.duration],

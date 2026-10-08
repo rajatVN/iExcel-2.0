@@ -23,7 +23,7 @@ const Batch = z.object({ changes: z.array(Body).min(1).max(9) });
  * `{ changes: [...] }` (used by the flush-on-exit beacon).
  */
 async function handle(req: Request) {
-  const ctx = await candidateContext();
+  const ctx = await candidateContext(req);
   if (!ctx.ok) return ctx.response;
   if (!ctx.session) return errorJson("not_started", 404);
   if (ctx.session.status !== "in_progress") {

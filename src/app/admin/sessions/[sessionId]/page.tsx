@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, RotateCcw, Trash2, Undo2 } from "lucide-react";
 import { isAdmin } from "@/lib/auth";
-import { fmt, getSessionDetail, mmss } from "@/lib/admin";
+import { fmt, getSessionDetail, mmss, RESET_PHRASE, RETEST_PHRASE } from "@/lib/admin";
 import { countWords, items } from "@/content/drishti";
 import { AdminShell } from "@/components/AdminShell";
 import { DownloadButtons } from "@/components/DownloadButtons";
 import { RegenerateReportButton } from "@/components/RegenerateReportButton";
+import { ConfirmActionButton } from "@/components/ConfirmActionButton";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,10 @@ export default async function AdminSessionPage({ params }: { params: Promise<{ s
   if (!d) notFound();
   const { session: s, candidate } = d;
   const end = s.submitted_at ? Math.min(s.submitted_at.getTime(), s.expires_at.getTime()) : null;
+  const latest = d.attempts[d.attempts.length - 1];
+  const isLatest = latest?.id === s.id;
+  const retestPending = isLatest && s.status === "submitted" && candidate.max_attempts > s.attempt_number;
+  const attemptLabel = (n: number) => (n === 1 ? "Attempt 1" : `Retest – Attempt ${n}`);
 
   return (
     <AdminShell>
@@ -42,7 +47,9 @@ export default async function AdminSessionPage({ params }: { params: Promise<{ s
         <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">{candidate.name}</h1>
-            <p className="text-sm text-ink-soft">{candidate.candidate_code}</p>
+            <p className="text-sm text-ink-soft">
+              {candidate.candidate_code} · {attemptLabel(s.attempt_number)}
+            </p>
           </div>
           {s.status === "submitted" && (
             <div className="flex flex-col items-end gap-2">
@@ -51,6 +58,99 @@ export default async function AdminSessionPage({ params }: { params: Promise<{ s
             </div>
           )}
         </div>
+
+        {d.attempts.length > 1 && (
+          <nav className="mt-4 flex flex-wrap gap-1.5" aria-label="Attempts">
+            {d.attempts.map((a) => (
+              <Link
+                key={a.id}
+                href={`/admin/sessions/${a.id}`}
+                aria-current={a.id === s.id ? "page" : undefined}
+                className={`rounded-lg px-3 py-1.5 text-xs font-semibold ring-1 ring-inset ${
+                  a.id === s.id ? "bg-navy-950 text-white ring-navy-950" : "bg-white text-ink-soft ring-line hover:text-ink"
+                }`}
+              >
+                {attemptLabel(a.attempt_number)}
+                {a.status === "in_progress" && " · in progress"}
+              </Link>
+            ))}
+          </nav>
+        )}
+
+        <section className="mt-6 rounded-2xl border border-line bg-white px-6 py-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="text-sm">
+              <div className="font-semibold">Manage attempts</div>
+              <div className="text-ink-soft">
+                {retestPending
+                  ? `Retest released — waiting for the candidate to start ${attemptLabel(candidate.max_attempts)}.`
+                  : !isLatest
+                    ? "This is an earlier attempt. Only the latest attempt can be reset."
+                    : s.status === "in_progress"
+                      ? "Attempt in progress. A retest can be released once it is submitted."
+                      : "The candidate cannot take another attempt unless you release a retest."}
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {isLatest && s.status === "submitted" && !retestPending && (
+                <ConfirmActionButton
+                  label="Release retest"
+                  icon={<RotateCcw className="h-3.5 w-3.5" />}
+                  title={`Release a retest for ${candidate.name}?`}
+                  description={
+                    <>
+                      <p>
+                        The candidate will see <strong>Retest – Attempt {s.attempt_number + 1}</strong> on their
+                        dashboard and can start it with a fresh timer and blank answers.
+                      </p>
+                      <p>Earlier attempts, their responses and reports are kept.</p>
+                    </>
+                  }
+                  phrase={RETEST_PHRASE}
+                  confirmLabel="Release retest"
+                  endpoint={`/api/admin/candidates/${candidate.id}/retest`}
+                />
+              )}
+              {retestPending && (
+                <ConfirmActionButton
+                  label="Withdraw retest"
+                  icon={<Undo2 className="h-3.5 w-3.5" />}
+                  title="Withdraw the released retest?"
+                  description={<p>The candidate has not started it yet. They will no longer be able to start it.</p>}
+                  confirmLabel="Withdraw retest"
+                  endpoint={`/api/admin/candidates/${candidate.id}/retest`}
+                  method="DELETE"
+                />
+              )}
+              {isLatest && (
+                <ConfirmActionButton
+                  label="Reset this attempt"
+                  icon={<Trash2 className="h-3.5 w-3.5" />}
+                  danger
+                  title={`Reset ${attemptLabel(s.attempt_number)}?`}
+                  description={
+                    <>
+                      <p>
+                        This <strong>permanently deletes</strong> this attempt for {candidate.name}: all responses,
+                        change history, session events and the report. It cannot be undone.
+                      </p>
+                      <p>
+                        {s.status === "in_progress"
+                          ? "The candidate is mid-attempt; their open page will be closed. "
+                          : ""}
+                        They can then start {attemptLabel(s.attempt_number)} again from the beginning.
+                      </p>
+                    </>
+                  }
+                  phrase={RESET_PHRASE}
+                  confirmLabel="Permanently reset"
+                  endpoint={`/api/admin/sessions/${s.id}/reset`}
+                  afterSuccess="remaining-attempt"
+                />
+              )}
+            </div>
+          </div>
+        </section>
 
         <dl className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line text-sm sm:grid-cols-4">
           {[

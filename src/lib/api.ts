@@ -23,14 +23,21 @@ export async function readJson(req: Request): Promise<unknown> {
 /**
  * Resolve the logged-in candidate and THEIR session. The session is always
  * derived from the authenticated identity — never from a client-supplied id.
+ *
+ * The assessment page also sends the id of the attempt it was opened for as
+ * `?sid=`. That is only ever used to REJECT a request (409 stale_session) when
+ * it no longer matches the current attempt — e.g. a tab left open on an
+ * attempt the admin has since reset — so it can't write into a newer attempt.
  */
-export async function candidateContext(): Promise<
+export async function candidateContext(req?: Request): Promise<
   | { ok: true; candidate: CandidateIdentity; session: SessionRow | null }
   | { ok: false; response: NextResponse }
 > {
   const candidate = await getCandidate();
   if (!candidate) return { ok: false, response: errorJson("unauthorised", 401) };
   const session = await getCandidateSession(candidate.id);
+  const sid = req ? new URL(req.url).searchParams.get("sid") : null;
+  if (sid && session && sid !== session.id) return { ok: false, response: errorJson("stale_session", 409) };
   return { ok: true, candidate, session };
 }
 

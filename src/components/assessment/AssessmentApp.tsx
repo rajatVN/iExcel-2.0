@@ -39,8 +39,11 @@ const SECTION_ICON: Record<BriefingSectionId, typeof Inbox> = {
 
 type Phase = "active" | "submitting" | "expired";
 
-function sendEvent(type: string, extra: { itemId?: number; detail?: string } = {}) {
-  void fetch("/api/session/events", {
+/** Session API URL tagged with the attempt this page was opened for (see candidateContext). */
+const api = (path: string, sessionId: string) => `/api/session/${path}?sid=${encodeURIComponent(sessionId)}`;
+
+function sendEvent(sessionId: string, type: string, extra: { itemId?: number; detail?: string } = {}) {
+  void fetch(api("events", sessionId), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ type, ...extra }),
@@ -77,8 +80,10 @@ export function AssessmentApp({
   const syncClock = useCallback(async () => {
     try {
       const t0 = Date.now();
-      const res = await fetch("/api/session/clock", { cache: "no-store" });
+      const res = await fetch(api("clock", sessionId), { cache: "no-store" });
       const t1 = Date.now();
+      // 409/404: this attempt was reset or replaced by the admin.
+      if (res.status === 409 || res.status === 404) return goComplete();
       if (!res.ok) return;
       const { session } = (await res.json()) as { session: SessionDto };
       offset.current = Date.parse(session.serverNow) - (t0 + t1) / 2;
@@ -87,7 +92,7 @@ export function AssessmentApp({
     } catch {
       // Offline: keep ticking on the last known offset.
     }
-  }, [goComplete]);
+  }, [goComplete, sessionId]);
 
   /* ---------------- Responses & autosave ---------------- */
   const initialValues = useMemo<Values>(() => {
@@ -110,7 +115,7 @@ export function AssessmentApp({
     sessionId,
     initial: initialValues,
     onLocked: goComplete,
-    onRecovered: () => sendEvent("local_recovery_applied"),
+    onRecovered: () => sendEvent(sessionId, "local_recovery_applied"),
   });
   const { values, setField, flush, status } = autosave;
 
@@ -150,7 +155,7 @@ export function AssessmentApp({
     const prev = lastVisit.current;
     if (prev && prev.item === selected && Date.now() - prev.at < 1500) return;
     lastVisit.current = { item: selected, at: Date.now() };
-    void fetch("/api/session/visit", {
+    void fetch(api("visit", sessionId), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ itemId: selected }),
@@ -163,19 +168,19 @@ export function AssessmentApp({
   useEffect(() => {
     if (!openedSent.current) {
       openedSent.current = true;
-      sendEvent("assessment_opened");
+      sendEvent(sessionId, "assessment_opened");
     }
     void syncClock();
     const iv = setInterval(() => void syncClock(), 30_000);
     const onVis = () => {
-      sendEvent(document.visibilityState === "hidden" ? "visibility_hidden" : "visibility_visible");
+      sendEvent(sessionId, document.visibilityState === "hidden" ? "visibility_hidden" : "visibility_visible");
       if (document.visibilityState === "visible") void syncClock();
     };
     const onOnline = () => {
-      sendEvent("connection_restored");
+      sendEvent(sessionId, "connection_restored");
       void syncClock();
     };
-    const onOffline = () => sendEvent("connection_lost"); // queued by the browser if possible
+    const onOffline = () => sendEvent(sessionId, "connection_lost"); // queued by the browser if possible
     document.addEventListener("visibilitychange", onVis);
     window.addEventListener("online", onOnline);
     window.addEventListener("offline", onOffline);
@@ -242,12 +247,12 @@ export function AssessmentApp({
       autosave.lock();
       for (let attempt = 0; ; attempt++) {
         try {
-          const res = await fetch("/api/session/submit", {
+          const res = await fetch(api("submit", sessionId), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ intent: "timeout" }),
           });
-          if (res.ok) return goComplete();
+          if (res.ok || res.status === 409) return goComplete();
           if (res.status === 425) {
             // Our clock ran slightly ahead of the server's. Wait until the server agrees.
             const data = await res.json();
@@ -278,7 +283,7 @@ export function AssessmentApp({
       return;
     }
     try {
-      const res = await fetch("/api/session/submit", {
+      const res = await fetch(api("submit", sessionId), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ intent: "manual" }),
@@ -314,7 +319,7 @@ export function AssessmentApp({
   const openDrawer = (id: BriefingSectionId) => {
     void flush();
     setDrawer(id);
-    sendEvent("panel_opened", { detail: id });
+    sendEvent(sessionId, "panel_opened", { detail: id });
   };
 
   const onFieldChange = (field: FieldName, value: string | null, immediate?: boolean) => {
@@ -408,6 +413,9 @@ export function AssessmentApp({
               <div className="text-blue-200/60">Candidate</div>
               <div className="mt-0.5 font-medium text-white">{candidate.name}</div>
               <div className="text-blue-200/60">{candidate.code}</div>
+              {initialSession.attemptNumber > 1 && (
+                <div className="mt-1.5 font-semibold text-blue-100">Retest – Attempt {initialSession.attemptNumber}</div>
+              )}
             </div>
           </div>
         </nav>

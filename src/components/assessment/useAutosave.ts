@@ -126,7 +126,7 @@ export function useAutosave(opts: {
 
     const attempt = (async () => {
       try {
-        const res = await fetch("/api/session/responses", {
+        const res = await fetch(`/api/session/responses?sid=${encodeURIComponent(sessionId)}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body,
@@ -180,7 +180,7 @@ export function useAutosave(opts: {
         if (pending.current.size > 0 && !locked.current) schedule(0);
       }
     }
-  }, [persist, schedule]);
+  }, [persist, schedule, sessionId]);
   flushRef.current = flush;
 
   const setField = useCallback(
@@ -210,10 +210,10 @@ export function useAutosave(opts: {
     if (locked.current || pending.current.size === 0 || !navigator.sendBeacon) return;
     const changes = [...pending.current].map(([itemId, fields]) => ({ itemId, fields }));
     navigator.sendBeacon(
-      "/api/session/responses",
+      `/api/session/responses?sid=${encodeURIComponent(sessionId)}`,
       new Blob([JSON.stringify({ changes })], { type: "application/json" }),
     );
-  }, []);
+  },[sessionId]);
 
   // Recover unsynced local work on load.
   useEffect(() => {

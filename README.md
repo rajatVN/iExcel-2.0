@@ -6,7 +6,7 @@ A web application for running the Project Drishti in-basket exercise. It handles
 - nine in-basket items, free navigation, **live autosave** with offline protection
 - manual submission or **automatic submission at timeout**
 - candidate response report generated server-side as **DOCX and PDF**
-- admin area to view responses, change history and telemetry, and to download or regenerate reports
+- admin area to view responses, change history and telemetry, to download or regenerate reports, and to release a retest or reset an attempt
 
 There is **no automated evaluation or scoring**. Responses go to assessors for manual rating.
 
@@ -26,7 +26,7 @@ On first start the app creates and seeds an embedded PostgreSQL database in `./.
 | Pilot candidates | `C01` … `C25`, access code `login-<ID>` (e.g. `C05` / `login-C05`) (seeded in `src/lib/seed.ts`) |
 | Admin | http://localhost:3000/admin, code = `ADMIN_ACCESS_CODE` in `.env.local` |
 
-Each candidate gets **one** attempt. Use a different candidate ID to test again, or wipe the local database (stop the dev server first):
+Each candidate gets **one** attempt unless an admin releases a retest or resets the attempt (see *Retests and resets* below). To start over locally, wipe the local database (stop the dev server first):
 
 ```bash
 npm run db:reset
@@ -54,11 +54,13 @@ The schema (`db/schema.sql`) is applied automatically and is idempotent. Row Lev
 
 ## How the key guarantees work
 
-**Timer.** `started_at` and `expires_at` are written with the database clock when *Start assessment* is pressed. Starting again is idempotent: there's one session per candidate, and the timer never restarts or extends. The browser shows `expires_at − (local time + measured server offset)`, ticking every 250 ms. It re-syncs with `/api/session/clock` every 30 s, on reconnect and when the tab becomes visible. Refreshing, opening a second tab or reconnecting all derive from the same `expires_at`.
+**Timer.** `started_at` and `expires_at` are written with the database clock when *Start assessment* is pressed. Starting again is idempotent: there's one in-progress session per candidate, and the timer never restarts or extends. The browser shows `expires_at − (local time + measured server offset)`, ticking every 250 ms. It re-syncs with `/api/session/clock` every 30 s, on reconnect and when the tab becomes visible. Refreshing, opening a second tab or reconnecting all derive from the same `expires_at`.
 
 **Timeout.** At 00:00 the inputs lock. Then pending edits are flushed and the client calls `submit` with intent `timeout`. The server accepts that only when *its* clock agrees time is up. If the browser was closed, the server finalises the session itself on the next request touching it (candidate or admin) once expiry plus grace has passed.
 
 **Autosave.** Every keystroke updates a `pending` map that's mirrored to `localStorage`. A debounced save (1.2 s) is sent, or an immediate one on priority change, item change, opening the briefing, tab hide, near expiry and submit. Only one request is in flight at a time, so writes stay ordered. A field leaves `pending` only when the server acknowledges that exact value. Failures retry with backoff, and coming back online triggers a sync. On reload, any unsynced local copy is re-applied and synced. Status shown: *Saving…*, *Saved ✓*, *Save failed — retrying…*, *Offline — your work is being saved locally*, *Back online — syncing…*.
+
+**Retests and resets.** Each attempt is its own `assessment_sessions` row with an `attempt_number`. A candidate can start a new attempt only when their latest one is submitted and `attempt_number < candidates.max_attempts`, which is 1 unless an admin raises it with *Release retest* (typed confirmation `RETEST`). The candidate then sees *Retest – Attempt N*, and earlier attempts and reports are kept. *Reset this attempt* (typed confirmation `RESET`, checked on the server too) permanently deletes the latest attempt with its responses, history, events and report, so the candidate can take it again. The assessment page sends its attempt id as `?sid=`, so a tab left open on a reset attempt is rejected (409) and can't write into a newer one.
 
 **History.** Every saved change to a field is written to `response_versions` (old value → new value, time, after-expiry flag). It's visible to admins only.
 

@@ -5,7 +5,7 @@ import { recordVisit } from "@/lib/sessions";
 const Body = z.object({ itemId: z.number().int().min(1).max(9) });
 
 export async function POST(req: Request) {
-  const ctx = await candidateContext();
+  const ctx = await candidateContext(req);
   if (!ctx.ok) return ctx.response;
   if (!ctx.session) return errorJson("not_started", 404);
   const parsed = Body.safeParse(await readJson(req));
