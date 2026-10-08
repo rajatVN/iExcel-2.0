@@ -83,5 +83,5 @@ assets/fonts/                 Noto Sans (SIL OFL) for PDF output
 ## Notes
 
 - The source `.docx` contains confidential assessor material and is excluded by `.gitignore`.
-- The briefing uses two infographics: `public/organisation-context.webp` (company, plants and the three pressures) and `public/organisation-structure.webp` (organisation chart, with Arvind Choudhary as COO).
+- The briefing uses two infographics: `public/aaravi-overview.webp` (company, plants and the three pressures; shown under the union-agreement paragraph in Organisation Context) and `public/organisation-structure.webp` (organisation chart, with Arvind Choudhary as COO).
 - Item content is adapted from the source: times use the 12-hour clock, email headers give each person's role in brackets, and emails open with a greeting and close with "Regards".

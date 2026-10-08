@@ -26,12 +26,13 @@ export function OrganisationContext() {
   const c = organisationContext;
   return (
     <div className="prose-item text-[15px] text-ink-soft">
+      <p>{c.intro}</p>
       <figure className="mb-2 overflow-hidden rounded-lg border border-line bg-white">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={c.image} alt="" className="h-auto w-full" />
         {/* The infographic's text, for screen readers. */}
         <figcaption className="sr-only">
-          <p>{c.intro}</p>
+          <p>{c.imageText}</p>
           <p>{c.pressuresLead}</p>
           <ul>
             {c.pressures.map((p) => (

@@ -57,10 +57,12 @@ export const ITEM_COUNT = 9;
 /* ------------------------------------------------------------------------ */
 
 export const organisationContext = {
-  /** Infographic of the company, its plants and the three pressures (intro, pressuresLead and pressures below). */
-  image: "/organisation-context.webp",
   intro:
-    "Aaravi Automotive Ltd. is an Indian vehicle manufacturer with more than thirty-five years in the market. It has two plants: Dharwad (Karnataka), the smaller and newer plant, and Neemrana (Rajasthan), the larger and older plant. A long-term settlement with the workers’ union covers manning, shift patterns and the introduction of new machinery at both plants. Most inspection staff are long-serving.",
+    "Aaravi has a long-term agreement with the workers’ union. Under it, any change to the number of workers, shift patterns or the introduction of new machinery at either plant must first be discussed and agreed with the union. Most inspection staff have worked at Aaravi for many years.",
+  /** Infographic of the company, its plants and the three pressures (imageText, pressuresLead and pressures below). */
+  image: "/aaravi-overview.webp",
+  imageText:
+    "Aaravi Automotive Ltd. is an Indian vehicle manufacturer with more than thirty-five years in the market. It has two plants: Dharwad (Karnataka), the smaller and newer plant, and Neemrana (Rajasthan), the larger and older plant.",
   pressuresLead: "The company faces three pressures at the same time:",
   pressures: [
     {
