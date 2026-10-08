@@ -31,6 +31,9 @@ export interface ResponseRow {
   item_id: number;
   priority: string | null;
   action_text: string | null;
+  say_now_text: string | null;
+  hold_text: string | null;
+  /** Legacy combined answer (before Say now / Hold was split). Read-only. */
   say_hold_text: string | null;
   recommendation_text: string | null;
   first_opened_at: Date | null;
@@ -40,7 +43,14 @@ export interface ResponseRow {
   [k: string]: unknown;
 }
 
-export const RESPONSE_FIELDS = ["priority", "action_text", "say_hold_text", "recommendation_text"] as const;
+export const RESPONSE_FIELDS = [
+  "priority",
+  "action_text",
+  "say_now_text",
+  "hold_text",
+  "say_hold_text",
+  "recommendation_text",
+] as const;
 export type ResponseField = (typeof RESPONSE_FIELDS)[number];
 export type ResponseFields = Partial<Record<ResponseField, string | null>>;
 
@@ -145,7 +155,7 @@ export async function startSession(candidateId: string): Promise<SessionRow> {
 export async function getResponses(sessionId: string): Promise<ResponseRow[]> {
   const db = await getDb();
   return db.query<ResponseRow>(
-    `select id, session_id, item_id, priority, action_text, say_hold_text, recommendation_text,
+    `select id, session_id, item_id, priority, action_text, say_now_text, hold_text, say_hold_text, recommendation_text,
             first_opened_at, last_opened_at, visit_count, updated_at
        from assessment_responses where session_id = $1 order by item_id`,
     [sessionId],
@@ -156,8 +166,12 @@ function validateFields(itemId: number, fields: ResponseFields): ResponseFields 
   if (!Number.isInteger(itemId) || itemId < 1 || itemId > 9) {
     throw new SessionError("invalid", "Invalid item");
   }
+  // say_hold_text is still accepted so drafts saved locally by the old form
+  // (before the split) can sync instead of being rejected.
   const allowed: ResponseField[] =
-    itemId === 9 ? ["recommendation_text"] : ["priority", "action_text", "say_hold_text"];
+    itemId === 9
+      ? ["recommendation_text"]
+      : ["priority", "action_text", "say_now_text", "hold_text", "say_hold_text"];
   const clean: ResponseFields = {};
   for (const [key, value] of Object.entries(fields)) {
     if (!allowed.includes(key as ResponseField)) {
@@ -338,6 +352,8 @@ export function responsesDto(rows: ResponseRow[]) {
     itemId: r.item_id,
     priority: r.priority,
     action_text: r.action_text,
+    say_now_text: r.say_now_text,
+    hold_text: r.hold_text,
     say_hold_text: r.say_hold_text,
     recommendation_text: r.recommendation_text,
   }));

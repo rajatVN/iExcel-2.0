@@ -25,8 +25,9 @@ export interface Database extends Queryable {
 
 async function createPglite(): Promise<Database> {
   const { PGlite } = await import("@electric-sql/pglite");
-  const dir = path.join(process.cwd(), ".data", "pglite");
-  fs.mkdirSync(dir, { recursive: true });
+  // PGLITE_DATA_DIR lets tests use an in-memory database ("memory://").
+  const dir = process.env.PGLITE_DATA_DIR || path.join(process.cwd(), ".data", "pglite");
+  if (!dir.startsWith("memory://")) fs.mkdirSync(dir, { recursive: true });
   const pg = new PGlite(dir);
   await pg.waitReady;
   return {
@@ -73,11 +74,20 @@ async function createPostgres(url: string): Promise<Database> {
   };
 }
 
+function readSchema(): string {
+  return fs.readFileSync(path.join(process.cwd(), "db", "schema.sql"), "utf8");
+}
+
+async function applySchema(db: Database, schema: string): Promise<void> {
+  for (const stmt of splitSql(schema)) await db.query(stmt);
+}
+
 async function init(): Promise<Database> {
   const url = process.env.DATABASE_URL?.trim();
   const db = url ? await createPostgres(url) : await createPglite();
-  const schema = fs.readFileSync(path.join(process.cwd(), "db", "schema.sql"), "utf8");
-  for (const stmt of splitSql(schema)) await db.query(stmt);
+  const schema = readSchema();
+  await applySchema(db, schema);
+  g.__inbasketSchema = schema;
   await seedDatabase(db);
   return db;
 }
@@ -94,7 +104,7 @@ function splitSql(sql: string): string[] {
 }
 
 // One instance per server process (survives Next.js hot reloads).
-const g = globalThis as unknown as { __inbasketDb?: Promise<Database> };
+const g = globalThis as unknown as { __inbasketDb?: Promise<Database>; __inbasketSchema?: string };
 
 export function getDb(): Promise<Database> {
   if (!g.__inbasketDb) {
@@ -102,6 +112,23 @@ export function getDb(): Promise<Database> {
       g.__inbasketDb = undefined;
       throw err;
     });
+  } else if (process.env.NODE_ENV !== "production") {
+    // The cached instance outlives hot reloads, so schema.sql edits made while
+    // the dev server is running would otherwise never reach the database.
+    // The schema is idempotent, so re-applying it on change is safe.
+    const schema = readSchema();
+    if (schema !== g.__inbasketSchema) {
+      const ready = g.__inbasketDb;
+      g.__inbasketSchema = schema;
+      g.__inbasketDb = ready.then(async (db) => {
+        await applySchema(db, schema);
+        return db;
+      });
+      g.__inbasketDb.catch(() => {
+        g.__inbasketDb = ready;
+        g.__inbasketSchema = undefined;
+      });
+    }
   }
   return g.__inbasketDb;
 }

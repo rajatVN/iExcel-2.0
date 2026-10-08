@@ -9,7 +9,9 @@ const Body = z.object({
     .object({
       priority: Field.optional(),
       action_text: Field.optional(),
-      say_hold_text: Field.optional(),
+      say_now_text: Field.optional(),
+      hold_text: Field.optional(),
+      say_hold_text: Field.optional(), // legacy drafts from before the split
       recommendation_text: Field.optional(),
     })
     .strict(),

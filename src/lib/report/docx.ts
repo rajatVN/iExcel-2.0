@@ -155,9 +155,12 @@ function itemSection(it: ReportItem): Paragraph[] {
       }),
       fieldLabel("Action"),
       ...candidateText(it.action),
-      fieldLabel("Say now / Hold"),
-      ...candidateText(it.sayHold),
+      fieldLabel("Say now"),
+      ...candidateText(it.sayNow),
+      fieldLabel("Hold"),
+      ...candidateText(it.hold),
     );
+    if (it.sayHoldLegacy) out.push(fieldLabel("Say now / Hold (legacy)"), ...candidateText(it.sayHoldLegacy));
   }
   return out;
 }

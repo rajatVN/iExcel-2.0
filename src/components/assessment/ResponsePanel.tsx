@@ -104,7 +104,7 @@ export function ResponsePanel({
         <p className="mb-2.5 mt-0.5 text-sm text-ink-soft">{g.action.hint}</p>
         <textarea
           id={id("action")}
-          className={`${textareaCls} min-h-[8.5rem]`}
+          className={`${textareaCls} min-h-[7.75rem]`}
           value={value.action_text ?? ""}
           onChange={(e) => onChange("action_text", e.target.value)}
           disabled={disabled}
@@ -113,21 +113,44 @@ export function ResponsePanel({
         />
       </div>
 
-      <div className="mt-6">
-        <label htmlFor={id("sayhold")} className="block text-sm font-semibold text-ink">
-          {g.sayHold.label}
-        </label>
+      <fieldset className="mt-6" disabled={disabled}>
+        <legend className="block text-sm font-semibold text-ink">{g.sayHold.label}</legend>
         <p className="mb-2.5 mt-0.5 text-sm text-ink-soft">{g.sayHold.hint}</p>
-        <textarea
-          id={id("sayhold")}
-          className={`${textareaCls} min-h-[5.5rem]`}
-          value={value.say_hold_text ?? ""}
-          onChange={(e) => onChange("say_hold_text", e.target.value)}
-          disabled={disabled}
-          placeholder="Say now… / Hold…"
-          spellCheck
-        />
-      </div>
+        {/* Side by side when the form is wide enough; stacked (Say now on top) when narrow.
+            A container query, so the inbox column on small laptops also counts as narrow. */}
+        <div className="@container">
+          <div className="grid grid-cols-1 gap-4 @md:grid-cols-2" data-testid="sayhold-row">
+            <div>
+              <label htmlFor={id("saynow")} className="mb-1.5 block text-[13px] font-medium text-ink-soft">
+                {g.sayHold.sayNow.label}
+              </label>
+              <textarea
+                id={id("saynow")}
+                className={`${textareaCls} min-h-[5.5rem]`}
+                value={value.say_now_text ?? ""}
+                onChange={(e) => onChange("say_now_text", e.target.value)}
+                disabled={disabled}
+                placeholder={g.sayHold.sayNow.placeholder}
+                spellCheck
+              />
+            </div>
+            <div>
+              <label htmlFor={id("hold")} className="mb-1.5 block text-[13px] font-medium text-ink-soft">
+                {g.sayHold.hold.label}
+              </label>
+              <textarea
+                id={id("hold")}
+                className={`${textareaCls} min-h-[5.5rem]`}
+                value={value.hold_text ?? ""}
+                onChange={(e) => onChange("hold_text", e.target.value)}
+                disabled={disabled}
+                placeholder={g.sayHold.hold.placeholder}
+                spellCheck
+              />
+            </div>
+          </div>
+        </div>
+      </fieldset>
     </section>
   );
 }
@@ -138,6 +161,10 @@ export function itemState(item: InBasketItem, v: Fields | undefined): ItemState 
   const has = (s: string | null | undefined) => !!s && s.trim().length > 0;
   if (!v) return "empty";
   if (item.responseType === "recommendation") return has(v.recommendation_text) ? "complete" : "empty";
-  const filled = [has(v.priority), has(v.action_text), has(v.say_hold_text)].filter(Boolean).length;
-  return filled === 0 ? "empty" : filled === 3 ? "complete" : "partial";
+  // A legacy combined answer (from before the split) counts for both halves.
+  const legacy = has(v.say_hold_text);
+  const filled = [has(v.priority), has(v.action_text), legacy || has(v.say_now_text), legacy || has(v.hold_text)].filter(
+    Boolean,
+  ).length;
+  return filled === 0 ? "empty" : filled === 4 ? "complete" : "partial";
 }

@@ -40,7 +40,10 @@ export interface ReportItem {
   type: "standard" | "recommendation";
   priority: string | null;
   action: string | null;
-  sayHold: string | null;
+  sayNow: string | null;
+  hold: string | null;
+  /** Legacy combined "Say now / Hold" answer, from before the field was split. */
+  sayHoldLegacy: string | null;
   recommendation: string | null;
   wordCount: number;
   blank: boolean;
@@ -105,10 +108,12 @@ export async function buildReportData(sessionId: string): Promise<ReportData> {
     item_id: number;
     priority: string | null;
     action_text: string | null;
+    say_now_text: string | null;
+    hold_text: string | null;
     say_hold_text: string | null;
     recommendation_text: string | null;
   }>(
-    `select item_id, priority, action_text, say_hold_text, recommendation_text
+    `select item_id, priority, action_text, say_now_text, hold_text, say_hold_text, recommendation_text
        from assessment_responses where session_id = $1`,
     [sessionId],
   );
@@ -118,12 +123,14 @@ export async function buildReportData(sessionId: string): Promise<ReportData> {
     const r = byItem.get(it.id);
     const priority = r?.priority ?? null;
     const action = r?.action_text ?? null;
-    const sayHold = r?.say_hold_text ?? null;
+    const sayNow = r?.say_now_text ?? null;
+    const hold = r?.hold_text ?? null;
+    const sayHoldLegacy = nonEmpty(r?.say_hold_text) ? r.say_hold_text : null;
     const recommendation = r?.recommendation_text ?? null;
     const blank =
       it.responseType === "recommendation"
         ? !nonEmpty(recommendation)
-        : !nonEmpty(priority) && !nonEmpty(action) && !nonEmpty(sayHold);
+        : ![priority, action, sayNow, hold, sayHoldLegacy].some(nonEmpty);
     return {
       id: it.id,
       shortTitle: it.shortTitle,
@@ -133,7 +140,9 @@ export async function buildReportData(sessionId: string): Promise<ReportData> {
       type: it.responseType,
       priority,
       action,
-      sayHold,
+      sayNow,
+      hold,
+      sayHoldLegacy,
       recommendation,
       wordCount: countWords(recommendation),
       blank,

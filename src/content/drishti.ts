@@ -638,7 +638,9 @@ export const responseGuidance = {
   },
   sayHold: {
     label: "Say now / Hold",
-    hint: "What will you communicate now, and what will you deliberately not say or commit yet? (1 line)",
+    hint: "What will you communicate now, and what will you deliberately not say or commit yet? (1 line each)",
+    sayNow: { label: "Say now", placeholder: "Who, and what you’ll say…" },
+    hold: { label: "Hold", placeholder: "What you’ll hold back, and why (or “Nothing to hold”)…" },
   },
   recommendation: {
     label: "Outline of your one-page recommendation to Suresh",

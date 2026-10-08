@@ -80,14 +80,25 @@ export async function listCandidates(): Promise<AdminRow[]> {
     item_id: number;
     priority: string | null;
     action_text: string | null;
+    say_now_text: string | null;
+    hold_text: string | null;
     say_hold_text: string | null;
     recommendation_text: string | null;
-  }>(`select session_id, item_id, priority, action_text, say_hold_text, recommendation_text from assessment_responses`);
+  }>(
+    `select session_id, item_id, priority, action_text, say_now_text, hold_text, say_hold_text, recommendation_text
+       from assessment_responses`,
+  );
 
   return rows.map((r) => {
     const mine = responses.filter((x) => x.session_id === r.session_id);
     const answered = mine.filter((x) =>
-      x.item_id === 9 ? filled(x.recommendation_text) : filled(x.priority) || filled(x.action_text) || filled(x.say_hold_text),
+      x.item_id === 9
+        ? filled(x.recommendation_text)
+        : filled(x.priority) ||
+          filled(x.action_text) ||
+          filled(x.say_now_text) ||
+          filled(x.hold_text) ||
+          filled(x.say_hold_text),
     );
     const status = (r.status ?? "not_started") as AdminRow["status"];
     const end = r.submitted_at && r.expires_at ? Math.min(r.submitted_at.getTime(), r.expires_at.getTime()) : null;
@@ -123,6 +134,8 @@ export async function getSessionDetail(sessionId: string) {
     item_id: number;
     priority: string | null;
     action_text: string | null;
+    say_now_text: string | null;
+    hold_text: string | null;
     say_hold_text: string | null;
     recommendation_text: string | null;
     first_opened_at: Date | null;
@@ -130,7 +143,7 @@ export async function getSessionDetail(sessionId: string) {
     visit_count: number;
     updated_at: Date;
   }>(
-    `select item_id, priority, action_text, say_hold_text, recommendation_text,
+    `select item_id, priority, action_text, say_now_text, hold_text, say_hold_text, recommendation_text,
             first_opened_at, last_opened_at, visit_count, updated_at
        from assessment_responses where session_id = $1 order by item_id`,
     [sessionId],

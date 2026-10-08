@@ -98,6 +98,8 @@ export function AssessmentApp({
       v[it.id] = {
         priority: r?.priority ?? null,
         action_text: r?.action_text ?? null,
+        say_now_text: r?.say_now_text ?? null,
+        hold_text: r?.hold_text ?? null,
         say_hold_text: r?.say_hold_text ?? null,
         recommendation_text: r?.recommendation_text ?? null,
       };

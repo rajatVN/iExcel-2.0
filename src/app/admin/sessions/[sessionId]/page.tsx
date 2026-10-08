@@ -13,7 +13,9 @@ export const dynamic = "force-dynamic";
 const FIELD_LABEL: Record<string, string> = {
   priority: "Priority",
   action_text: "Action",
-  say_hold_text: "Say now / Hold",
+  say_now_text: "Say now",
+  hold_text: "Hold",
+  say_hold_text: "Say now / Hold (legacy)",
   recommendation_text: "Recommendation",
 };
 
@@ -104,12 +106,24 @@ export default async function AdminSessionPage({ params }: { params: Promise<{ s
                         <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-faint">Action</div>
                         <Text value={r?.action_text ?? null} />
                       </div>
-                      <div>
-                        <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-faint">
-                          Say now / Hold
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div>
+                          <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-faint">Say now</div>
+                          <Text value={r?.say_now_text ?? null} />
                         </div>
-                        <Text value={r?.say_hold_text ?? null} />
+                        <div>
+                          <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-faint">Hold</div>
+                          <Text value={r?.hold_text ?? null} />
+                        </div>
                       </div>
+                      {r?.say_hold_text?.trim() && (
+                        <div>
+                          <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+                            Say now / Hold (legacy)
+                          </div>
+                          <Text value={r.say_hold_text} />
+                        </div>
+                      )}
                     </>
                   )}
                   {hist.length > 0 && (

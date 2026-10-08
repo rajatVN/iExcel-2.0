@@ -56,6 +56,10 @@ create table if not exists assessment_responses (
   -- Items 1–8
   priority             text check (priority in ('High', 'Medium', 'Low')),
   action_text          text,
+  say_now_text         text,
+  hold_text            text,
+  -- Legacy: combined "Say now / Hold" answer from before the field was split.
+  -- No longer written by the form; kept so earlier responses are not lost.
   say_hold_text        text,
   -- Item 9
   recommendation_text  text,
@@ -76,13 +80,24 @@ create table if not exists response_versions (
   session_id     uuid not null references assessment_sessions(id) on delete cascade,
   item_id        integer not null,
   field_changed  text not null
-                   check (field_changed in ('priority', 'action_text', 'say_hold_text', 'recommendation_text')),
+                   check (field_changed in ('priority', 'action_text', 'say_now_text', 'hold_text',
+                                            'say_hold_text', 'recommendation_text')),
   old_value      text,
   new_value      text,
   changed_at     timestamptz not null default now(),
   -- True when the change reached the server after expires_at (grace window).
   after_expiry   boolean not null default false
 );
+-- Migration (idempotent): split "Say now / Hold" into two fields. Databases
+-- created before the split get the new columns and a widened field check.
+-- Existing say_hold_text values are left untouched (shown as legacy).
+alter table assessment_responses add column if not exists say_now_text text;
+alter table assessment_responses add column if not exists hold_text text;
+alter table response_versions drop constraint if exists response_versions_field_changed_check;
+alter table response_versions add constraint response_versions_field_changed_check
+  check (field_changed in ('priority', 'action_text', 'say_now_text', 'hold_text',
+                           'say_hold_text', 'recommendation_text'));
+
 create index if not exists response_versions_session_idx on response_versions (session_id, item_id, changed_at);
 
 -- Non-scoring telemetry: start, submit, visibility, connectivity, panels opened…

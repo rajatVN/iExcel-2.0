@@ -20,6 +20,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 export interface Fields {
   priority: string | null;
   action_text: string | null;
+  say_now_text: string | null;
+  hold_text: string | null;
+  /** Legacy combined answer from before Say now / Hold was split. Not edited by the form. */
   say_hold_text: string | null;
   recommendation_text: string | null;
 }
