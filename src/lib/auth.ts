@@ -67,6 +67,8 @@ export interface CandidateIdentity {
   candidate_code: string;
   name: string;
   role: string | null;
+  /** Set once the candidate has typed their own name; null while `name` is the seeded placeholder. */
+  name_confirmed_at: Date | null;
 }
 
 /** The logged-in candidate, verified against the database, or null. */
@@ -75,7 +77,7 @@ export async function getCandidate(): Promise<CandidateIdentity | null> {
   if (!id) return null;
   const db = await getDb();
   const rows = await db.query<CandidateIdentity & Record<string, unknown>>(
-    `select id, candidate_code, name, role from candidates where id = $1`,
+    `select id, candidate_code, name, role, name_confirmed_at from candidates where id = $1`,
     [id],
   );
   return rows[0] ?? null;

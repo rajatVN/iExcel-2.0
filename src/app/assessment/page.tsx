@@ -8,6 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function AssessmentPage() {
   const candidate = await getCandidate();
   if (!candidate) redirect("/");
+  if (!candidate.name_confirmed_at) redirect("/dashboard");
   const session = await getCandidateSession(candidate.id);
   if (!session) redirect("/dashboard");
   if (session.status === "submitted") redirect("/complete");

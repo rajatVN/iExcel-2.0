@@ -57,6 +57,9 @@ create table if not exists assessment_sessions (
 -- Migration (idempotent): numbered attempts so an admin can release a retest.
 -- Replaces the old one-attempt-per-candidate unique constraint.
 alter table candidates add column if not exists max_attempts integer not null default 1;
+-- Migration (idempotent): candidates type their own name before starting.
+-- Until then `name` holds the seeded placeholder ("Pilot Candidate 05").
+alter table candidates add column if not exists name_confirmed_at timestamptz;
 alter table assessment_sessions add column if not exists attempt_number integer not null default 1;
 alter table assessment_sessions drop constraint if exists assessment_sessions_candidate_id_assessment_id_key;
 create unique index if not exists assessment_sessions_attempt_idx

@@ -13,6 +13,7 @@ export const dynamic = "force-dynamic";
 export default async function BriefingPage() {
   const candidate = await getCandidate();
   if (!candidate) redirect("/");
+  if (!candidate.name_confirmed_at) redirect("/dashboard");
   const session = await getCandidateSession(candidate.id);
   if (session?.status === "submitted") redirect("/complete");
   const minutes = session?.duration_minutes ?? assessmentDurationMinutes();

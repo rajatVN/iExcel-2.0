@@ -7,12 +7,21 @@ import { assessmentDurationMinutes } from "@/lib/config";
 import { ITEM_COUNT, ROLE_NAME, ROLE_TITLE } from "@/content/drishti";
 import { CandidateShell } from "@/components/CandidateShell";
 import { StartAssessmentButton } from "@/components/StartAssessmentButton";
+import { NamePrompt } from "@/components/NamePrompt";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const candidate = await getCandidate();
   if (!candidate) redirect("/");
+  // Nothing else is shown until the candidate has typed their name.
+  if (!candidate.name_confirmed_at) {
+    return (
+      <CandidateShell candidate={candidate}>
+        <NamePrompt />
+      </CandidateShell>
+    );
+  }
   const session = await getCandidateSession(candidate.id);
   const allowance = await getAttemptAllowance(candidate.id);
   // A submitted candidate only comes back here when the admin has released a retest.
